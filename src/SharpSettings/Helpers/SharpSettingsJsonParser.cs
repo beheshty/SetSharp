@@ -5,7 +5,7 @@ namespace SharpSettings.Helpers
     /// <summary>
     /// Simple and minimal JSON parser for configuration source generation.
     /// </summary>
-    internal static class SharpSettingsJsonParser
+    public static class SharpSettingsJsonParser
     {
         /// <summary>
         /// Parses a JSON object string into a dictionary.
@@ -46,7 +46,7 @@ namespace SharpSettings.Helpers
             return raw;
         }
 
-        private static List<object> ParseArray(string arrayJson)
+        public static List<object> ParseArray(string arrayJson)
         {
             var elements = new List<object>();
             var inner = arrayJson.Trim().TrimStart('[').TrimEnd(']');
