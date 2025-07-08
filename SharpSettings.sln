@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSettings", "src\SharpS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSettings.Demo", "tests\SharpSettings.Demo\SharpSettings.Demo.csproj", "{235017CD-E63F-4C2C-9BB6-34523FD72CD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSettings.Tests", "tests\SharpSettings.Tests\SharpSettings.Tests.csproj", "{80204F4B-65E5-4DD5-9395-2CA17F15BD77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{235017CD-E63F-4C2C-9BB6-34523FD72CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{235017CD-E63F-4C2C-9BB6-34523FD72CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{235017CD-E63F-4C2C-9BB6-34523FD72CD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80204F4B-65E5-4DD5-9395-2CA17F15BD77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80204F4B-65E5-4DD5-9395-2CA17F15BD77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80204F4B-65E5-4DD5-9395-2CA17F15BD77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80204F4B-65E5-4DD5-9395-2CA17F15BD77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{12A24A31-BC7D-4130-86AA-231772B92F5E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{235017CD-E63F-4C2C-9BB6-34523FD72CD0} = {F50C554B-27D0-43FA-9F06-86443CE8C203}
+		{80204F4B-65E5-4DD5-9395-2CA17F15BD77} = {F50C554B-27D0-43FA-9F06-86443CE8C203}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2ADCB9C-D71A-452C-9B2B-CEABA5277F66}
