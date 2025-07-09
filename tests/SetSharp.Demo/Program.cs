@@ -16,8 +16,8 @@ var loggingOptions = builder.Configuration.GetSection("Logging:LogLevel").Get<Lo
 if (loggingOptions is not null)
 {
     Console.WriteLine("Logging Options:");
-    Console.WriteLine($"  • {nameof(loggingOptions.Default)}: {loggingOptions.Default}");
-    Console.WriteLine($"  • {nameof(loggingOptions.MicrosoftAspNetCore)}: {loggingOptions.MicrosoftAspNetCore}");
+    Console.WriteLine($"  • {nameof(loggingOptions.LogLevel.Default)}: {loggingOptions.LogLevel.Default}");
+    Console.WriteLine($"  • {nameof(loggingOptions.LogLevel.MicrosoftAspNetCore)}: {loggingOptions.LogLevel.MicrosoftAspNetCore}");
     Console.WriteLine();
 }
 
