@@ -24,7 +24,7 @@ Using SetSharp is as easy as pie (and much less messy!). Here's how to get start
     </ItemGroup>
     ```
 
-3.  **Build Your Project:** That's it! When you build your project, SetSharp will automatically generate the C# classes based on your JSON structure. You'll find them ready to use in your code, under the SetSharp namespace.
+3.  **Build Your Project:** That's it! When you build your project, SetSharp will automatically generate the C# classes based on your JSON structure. You'll find them ready to use in your code, under the SetSharp.Configuration namespace.
 
     Now you can access your settings with full type safety:
     ```csharp
