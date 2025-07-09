@@ -7,6 +7,8 @@ namespace SetSharp.CodeGeneration
     {
         public static string GenerateClasses(string jsonContent, string @namespace = "SetSharp.Configuration")
         {
+            var assemblyVersion = typeof(SettingsCodeBuilder).Assembly.GetName().Version.ToString();
+
             var root = SetSharpJsonParser.Parse(jsonContent);
             var sb = new StringBuilder();
             var queue = new Queue<(string className, Dictionary<string, object> properties)>();
@@ -22,7 +24,7 @@ namespace SetSharp.CodeGeneration
                 var (className, props) = queue.Dequeue();
 
                 sb.AppendLine("    /// <summary>Auto-generated from appsettings.json</summary>");
-                sb.AppendLine("    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"1.0.3\")]");
+                sb.AppendLine($"    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"{assemblyVersion}\")]");
                 sb.AppendLine($"    public class {className}");
                 sb.AppendLine("    {");
 
