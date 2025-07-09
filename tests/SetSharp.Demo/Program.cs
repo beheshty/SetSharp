@@ -12,12 +12,12 @@ builder.Configuration.Sources.Clear();
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 // --- Logging Options ---
-var loggingOptions = builder.Configuration.GetSection("Logging:LogLevel").Get<LoggingOptions>();
+var loggingOptions = builder.Configuration.GetSection("Logging:LogLevel").Get<LogLevelOptions>();
 if (loggingOptions is not null)
 {
     Console.WriteLine("Logging Options:");
-    Console.WriteLine($"  • {nameof(loggingOptions.LogLevel.Default)}: {loggingOptions.LogLevel.Default}");
-    Console.WriteLine($"  • {nameof(loggingOptions.LogLevel.MicrosoftAspNetCore)}: {loggingOptions.LogLevel.MicrosoftAspNetCore}");
+    Console.WriteLine($"  • {nameof(loggingOptions.Default)}: {loggingOptions.Default}");
+    Console.WriteLine($"  • {nameof(loggingOptions.MicrosoftAspNetCore)}: {loggingOptions.MicrosoftAspNetCore}");
     Console.WriteLine();
 }
 
