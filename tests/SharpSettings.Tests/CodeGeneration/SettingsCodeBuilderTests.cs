@@ -1,6 +1,6 @@
-using SharpSettings.CodeGeneration;
+using SetSharp.CodeGeneration;
 
-namespace SharpSettings.Tests.CodeGeneration
+namespace SetSharp.Tests.CodeGeneration
 {
     public class SettingsCodeBuilderTests
     {
@@ -11,7 +11,7 @@ namespace SharpSettings.Tests.CodeGeneration
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
             Assert.Contains("using System.Collections.Generic;", generatedCode);
-            Assert.Contains("namespace SharpSettings.Configuration", generatedCode);
+            Assert.Contains("namespace SetSharp.Configuration", generatedCode);
             Assert.Contains("public class RootOptions", generatedCode);
             Assert.Contains("public string Key1 { get; set; }", generatedCode);
             Assert.Contains("public int Key2 { get; set; }", generatedCode);

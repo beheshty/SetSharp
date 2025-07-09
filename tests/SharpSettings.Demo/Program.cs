@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using SharpSettings.Configuration;
+using SetSharp.Configuration;
 
 
 Console.WriteLine("Configuration Explorer is live! Let's see what secrets your appsettings hold...\n");

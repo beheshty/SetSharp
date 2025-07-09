@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace SharpSettings.Helpers
+namespace SetSharp.Helpers
 {
     public static class CSharpKeywords
     {

@@ -1,15 +1,14 @@
-using SharpSettings.Helpers;
-using Xunit;
+using SetSharp.Helpers;
 
-namespace SharpSettings.Tests.Helpers
+namespace SetSharp.Tests.Helpers
 {
-    public class SharpSettingsJsonParserTests
+    public class SetSharpJsonParserTests
     {
         [Fact]
         public void Parse_ValidJsonObject_ReturnsDictionary()
         {
             var json = "{\"Key1\":\"Value1\",\"Key2\":123,\"Key3\":true}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
@@ -22,7 +21,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_NestedJsonObject_ReturnsDictionaryWithNestedDictionary()
         {
             var json = "{\"Key1\":{\"NestedKey\":\"NestedValue\"}}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("Key1"));
@@ -34,7 +33,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_JsonArray_ReturnsDictionaryWithList()
         {
             var json = "{\"Key1\":[\"Item1\",\"Item2\"]}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("Key1"));
@@ -48,7 +47,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_EmptyJsonObject_ReturnsEmptyDictionary()
         {
             var json = "{}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.Empty(result);
@@ -58,14 +57,14 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_InvalidJson_ThrowsFormatException()
         {
             var json = "Invalid Json";
-            Assert.Throws<FormatException>(() => SharpSettingsJsonParser.Parse(json));
+            Assert.Throws<FormatException>(() => SetSharpJsonParser.Parse(json));
         }
 
         [Fact]
         public void Parse_JsonWithNullValue_ReturnsDictionaryWithNull()
         {
             var json = "{\"Key1\":null}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("Key1"));
@@ -76,7 +75,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_JsonWithDoubleValue_ReturnsDictionaryWithDouble()
         {
             var json = "{\"Key1\":123.45}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("Key1"));
@@ -87,7 +86,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_JsonWithIntegerValue_ReturnsDictionaryWithInt()
         {
             var json = "{\"Key1\":123}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("Key1"));
@@ -98,7 +97,7 @@ namespace SharpSettings.Tests.Helpers
         public void Parse_JsonWithMixedTypes_ReturnsCorrectTypes()
         {
             var json = "{\"stringVal\":\"hello\",\"intVal\":10,\"boolVal\":true,\"doubleVal\":1.23,\"nullVal\":null,\"arrayVal\":[1,2],\"objectVal\":{\"nested\":\"value\"}}";
-            var result = SharpSettingsJsonParser.Parse(json);
+            var result = SetSharpJsonParser.Parse(json);
 
             Assert.NotNull(result);
             Assert.Equal("hello", result["stringVal"]);
@@ -116,7 +115,7 @@ namespace SharpSettings.Tests.Helpers
         public void ParseArray_EmptyArray_ReturnsEmptyList()
         {
             var jsonArray = "[]";
-            var result = SharpSettingsJsonParser.ParseArray(jsonArray);
+            var result = SetSharpJsonParser.ParseArray(jsonArray);
 
             Assert.NotNull(result);
             Assert.Empty(result);
@@ -126,7 +125,7 @@ namespace SharpSettings.Tests.Helpers
         public void ParseArray_ArrayWithSpaces_ReturnsCorrectList()
         {
             var jsonArray = "[ \"item1\" , 123 ]";
-            var result = SharpSettingsJsonParser.ParseArray(jsonArray);
+            var result = SetSharpJsonParser.ParseArray(jsonArray);
 
             Assert.NotNull(result);
             Assert.Equal(2, result.Count);
@@ -138,7 +137,7 @@ namespace SharpSettings.Tests.Helpers
         public void ParseArray_ArrayOfObjects_ReturnsListOfDictionaries()
         {
             var jsonArray = "[{\"a\":1}, {\"b\":2}]";
-            var result = SharpSettingsJsonParser.ParseArray(jsonArray);
+            var result = SetSharpJsonParser.ParseArray(jsonArray);
 
             Assert.NotNull(result);
             Assert.Equal(2, result.Count);

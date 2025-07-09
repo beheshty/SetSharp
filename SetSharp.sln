@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F50C554B-27D0-43FA-9F06-86443CE8C203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSettings", "src\SharpSettings\SharpSettings.csproj", "{12A24A31-BC7D-4130-86AA-231772B92F5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetSharp", "src\SharpSettings\SetSharp.csproj", "{12A24A31-BC7D-4130-86AA-231772B92F5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSettings.Demo", "tests\SharpSettings.Demo\SharpSettings.Demo.csproj", "{235017CD-E63F-4C2C-9BB6-34523FD72CD0}"
 EndProject
