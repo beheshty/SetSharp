@@ -64,4 +64,7 @@ Even the best code needs a little polish now and then. This section will be upda
     *   **Nested Array Handling:** Improving the parser's ability to correctly handle arrays nested within other arrays.
     *   **Dot-Notation Property Mapping:** Resolving issues with mapping properties that contain dots in their names within the `appsettings.json`, ensuring they correctly correspond to generated class properties.
 
+## Contributing
+
+We love contributions! Whether it's a new feature, a bug fix, or an improvement to the documentation, your help is always welcome. SetSharp is an open-source project, and we believe in the power of community. If you have ideas, suggestions, or want to dive into the code, don't hesitate to open an issue or submit a pull request. Let's make SetSharp even sharper together!
 
