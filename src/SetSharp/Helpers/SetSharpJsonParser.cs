@@ -5,14 +5,14 @@ namespace SetSharp.Helpers
     /// <summary>
     /// Simple and minimal JSON parser for configuration source generation.
     /// </summary>
-    public static class SetSharpJsonParser
+    internal static class SetSharpJsonParser
     {
         /// <summary>
         /// Parses a JSON object string into a dictionary.
         /// </summary>
         /// <param name="json">The JSON string.</param>
         /// <returns>Dictionary representing the JSON object.</returns>
-        public static Dictionary<string, object> Parse(string json)
+        internal static Dictionary<string, object> Parse(string json)
         {
             json = json.Trim();
             if (!json.StartsWith("{") || !json.EndsWith("}"))
@@ -46,7 +46,7 @@ namespace SetSharp.Helpers
             return raw;
         }
 
-        public static List<object> ParseArray(string arrayJson)
+        internal static List<object> ParseArray(string arrayJson)
         {
             var elements = new List<object>();
             var inner = arrayJson.Trim().TrimStart('[').TrimEnd(']');
