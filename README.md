@@ -54,16 +54,6 @@ This section is currently under construction, much like a secret lair for future
 *   [ ] **`SectionName` Property:** Imagine a world where you can instantly know which part of your JSON a class maps to! We're looking into adding a `SectionName` property to each generated class for easier identification and potentially other benefits.
 *   [ ] **Partial Classes for Customization:** To give you even more control, we'll be making the generated classes `partial`, allowing you to extend them with your own logic or properties without touching the generated code.
 
-## Future Fixes
-
-Even the best code needs a little polish now and then. This section will be updated with any planned bug fixes or improvements.
-
-*   [ ] **Enhanced List Mapping:** Currently, only the first object in a JSON list is considered for class generation. We're working on a smarter approach that will analyze all objects in a list to create a more robust and accurate class structure.
-*   [ ] **Robust JSON Parsing:** Our JSON parser is getting a tune-up! We're addressing a few quirks:
-    *   **Escaped Quotes in Strings:** Fixing an issue where strings containing escaped quotes (`"`) are not correctly parsed, leading to incorrect class generation.
-    *   **Nested Array Handling:** Improving the parser's ability to correctly handle arrays nested within other arrays.
-    *   **Dot-Notation Property Mapping:** Resolving issues with mapping properties that contain dots in their names within the `appsettings.json`, ensuring they correctly correspond to generated class properties.
-
 ## Contributing
 
 We love contributions! Whether it's a new feature, a bug fix, or an improvement to the documentation, your help is always welcome. SetSharp is an open-source project, and we believe in the power of community. If you have ideas, suggestions, or want to dive into the code, don't hesitate to open an issue or submit a pull request. Let's make SetSharp even sharper together!
