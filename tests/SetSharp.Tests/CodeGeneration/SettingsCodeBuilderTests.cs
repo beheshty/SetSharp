@@ -80,7 +80,7 @@ namespace SetSharp.Tests.CodeGeneration
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
             Assert.Contains("public class RootOptions", generatedCode);
-            Assert.Contains("public string ClassProperty { get; set; }", generatedCode);
+            Assert.Contains("public string Class { get; set; }", generatedCode);
         }
 
         [Fact]
@@ -103,6 +103,111 @@ namespace SetSharp.Tests.CodeGeneration
             Assert.Contains("namespace MyCustomNamespace", generatedCode);
             Assert.Contains("public class RootOptions", generatedCode);
             Assert.Contains("public string Key1 { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_HandlesBooleanAndDoubleTypes()
+        {
+            var json = @"{""IsEnabled"": true, ""Value"": 99.9, ""Factors"": [1.1, 2.2], ""States"": [false, true]}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("public bool IsEnabled { get; set; }", generatedCode);
+            Assert.Contains("public double Value { get; set; }", generatedCode);
+            Assert.Contains("public List<double> Factors { get; set; }", generatedCode);
+            Assert.Contains("public List<bool> States { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_KeyStartsWithNumber_NormalizesAndAddsAttribute()
+        {
+            var json = @"{""1stKey"": ""value""}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            // Asserts that the original key name is preserved for configuration binding.
+            Assert.Contains("[Microsoft.Extensions.Configuration.ConfigurationKeyName(\"1stKey\")]", generatedCode);
+            // Asserts that the property name is a valid C# identifier.
+            Assert.Contains("public string _1stKey { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_KeyWithHyphen_NormalizesAndAddsAttribute()
+        {
+            var json = @"{""my-key"": ""value""}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("[Microsoft.Extensions.Configuration.ConfigurationKeyName(\"my-key\")]", generatedCode);
+            Assert.Contains("public string Mykey { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_KeyWithOnlyInvalidChars_NormalizesAndAddsAttribute()
+        {
+            var json = @"{""@#$!"": ""value""}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("[Microsoft.Extensions.Configuration.ConfigurationKeyName(\"@#$!\")]", generatedCode);
+            Assert.Contains("public string InvalidNameProperty { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_EmptyArray_GeneratesListOfObject()
+        {
+            var json = @"{""EmptyList"": []}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("public List<object> EmptyList { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_ArrayWithNullFirst_GeneratesListOfObject()
+        {
+            var json = @"{""NullableList"": [null, ""item2""]}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("public List<object> NullableList { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_DeeplyNestedObject_GeneratesAllClasses()
+        {
+            var json = @"{""Level1"":{""Level2"":{""Name"":""DeepValue""}}}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            // Check level 1 class and property
+            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public Level1Options Level1 { get; set; }", generatedCode);
+
+            // Check level 2 class and property
+            Assert.Contains("public class Level1Options", generatedCode);
+            Assert.Contains("public Level2Options Level2 { get; set; }", generatedCode);
+
+            // Check level 3 property
+            Assert.Contains("public class Level2Options", generatedCode);
+            Assert.Contains("public string Name { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_GeneratedCodeAttribute_IsPresent()
+        {
+            var json = "{}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+            var assemblyVersion = typeof(SettingsCodeBuilder).Assembly.GetName().Version.ToString();
+
+            var expectedAttribute = $"[System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"{assemblyVersion}\")]";
+            Assert.Contains(expectedAttribute, generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_ArrayWithMixedTypes_InfersFromFirstElement()
+        {
+            // This test documents the current behavior where the type of a list
+            // is inferred solely from its first element.
+            var json = @"{""MixedList"": [{""Name"": ""Obj1""}, ""text"", 123]}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("public List<MixedListItemOptions> MixedList { get; set; }", generatedCode);
+            Assert.Contains("public class MixedListItemOptions", generatedCode);
+            Assert.Contains("public string Name { get; set; }", generatedCode);
         }
     }
 }
