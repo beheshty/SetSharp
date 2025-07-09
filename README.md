@@ -21,8 +21,6 @@ Using SetSharp is as easy as pie (and much less messy!). Here's how to get start
     ```xml
     <ItemGroup>
         <AdditionalFiles Include="appsettings.json" />
-        <!-- You can add other JSON files too! -->
-        <!-- <AdditionalFiles Include="config.json" /> -->
     </ItemGroup>
     ```
 
