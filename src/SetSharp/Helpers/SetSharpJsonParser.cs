@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SharpSettings.Helpers
+namespace SetSharp.Helpers
 {
     /// <summary>
     /// Simple and minimal JSON parser for configuration source generation.
     /// </summary>
-    public static class SharpSettingsJsonParser
+    public static class SetSharpJsonParser
     {
         /// <summary>
         /// Parses a JSON object string into a dictionary.

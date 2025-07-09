@@ -1,13 +1,13 @@
-﻿using SharpSettings.Helpers;
+﻿using SetSharp.Helpers;
 using System.Text;
 
-namespace SharpSettings.CodeGeneration
+namespace SetSharp.CodeGeneration
 {
     public class SettingsCodeBuilder
     {
-        public static string GenerateClasses(string jsonContent, string @namespace = "SharpSettings.Configuration")
+        public static string GenerateClasses(string jsonContent, string @namespace = "SetSharp.Configuration")
         {
-            var root = SharpSettingsJsonParser.Parse(jsonContent);
+            var root = SetSharpJsonParser.Parse(jsonContent);
             var sb = new StringBuilder();
             var queue = new Queue<(string className, Dictionary<string, object> properties)>();
             queue.Enqueue(("RootOptions", root));
@@ -22,7 +22,7 @@ namespace SharpSettings.CodeGeneration
                 var (className, props) = queue.Dequeue();
 
                 sb.AppendLine("    /// <summary>Auto-generated from appsettings.json</summary>");
-                sb.AppendLine("    [System.CodeDom.Compiler.GeneratedCode(\"SharpSettings\", \"1.0.0\")]");
+                sb.AppendLine("    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"1.0.0\")]");
                 sb.AppendLine($"    public class {className}");
                 sb.AppendLine("    {");
 

@@ -1,12 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using SharpSettings.CodeGeneration;
+using SetSharp.CodeGeneration;
 using System.Text;
 
-namespace SharpSettings
+namespace SetSharp
 {
     [Generator]
-    public class SharpSettingsSourceGenerator : IIncrementalGenerator
+    public class SetSharpSourceGenerator : IIncrementalGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
