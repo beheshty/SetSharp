@@ -1,5 +1,6 @@
 ﻿using SetSharp.Helpers;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SetSharp.CodeGeneration
 {
@@ -40,7 +41,11 @@ namespace SetSharp.CodeGeneration
                         List<object> list => InferListType(queue, item.Key, list),
                         _ => "object"
                     };
-
+                    var normalizedName = NormalizeName(item.Key);
+                    if(normalizedName != item.Key)
+                    {
+                        sb.AppendLine($"        [Microsoft.Extensions.Configuration.ConfigurationKeyName(\"{item.Key}\")]");
+                    }
                     sb.AppendLine($"        public {type} {NormalizeName(item.Key)} {{ get; set; }}");
                 }
 
@@ -76,13 +81,31 @@ namespace SetSharp.CodeGeneration
             };
         }
 
+        /// <summary>
+        /// Cleans a string to make it a valid C# identifier (e.g., for a property name).
+        /// </summary>
+        /// <param name="input">The raw string to be normalized.</param>
+        /// <returns>A valid C# identifier.</returns>
         private static string NormalizeName(string input)
         {
-            if (string.IsNullOrWhiteSpace(input)) return input;
-            if (CSharpKeywords.Reserved.Contains(input))
-                input += "Property";
-            input = input.Replace(".", "");
-            return char.ToUpper(input[0]) + input.Substring(1);
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return "UnnamedProperty";
+            }
+
+            string sanitized = Regex.Replace(input, @"[^a-zA-Z0-9_]", "");
+
+            if (!string.IsNullOrEmpty(sanitized) && char.IsDigit(sanitized[0]))
+            {
+                sanitized = "_" + sanitized;
+            }
+
+            if (string.IsNullOrEmpty(sanitized))
+            {
+                return "InvalidNameProperty";
+            }
+
+            return char.ToUpper(sanitized[0]) + sanitized.Substring(1);
         }
     }
 }
