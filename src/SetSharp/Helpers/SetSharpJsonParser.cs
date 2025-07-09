@@ -110,7 +110,14 @@ namespace SetSharp.Helpers
 
                 if (json[index] == ',')
                 {
-                    index++;
+                    index++; // Consume the comma
+                    SkipWhitespace(json, ref index);
+
+                    // After a comma, a closing brace is illegal (a trailing comma).
+                    if (json[index] == '}')
+                    {
+                        throw new FormatException($"Trailing comma found in object at index {index}.");
+                    }
                 }
                 else if (json[index] == '}')
                 {
@@ -145,7 +152,14 @@ namespace SetSharp.Helpers
 
                 if (json[index] == ',')
                 {
-                    index++;
+                    index++; // Consume the comma
+                    SkipWhitespace(json, ref index);
+
+                    // After a comma, a closing brace is illegal (a trailing comma).
+                    if (json[index] == ']')
+                    {
+                        throw new FormatException($"Trailing comma found in object at index {index}.");
+                    }
                 }
                 else if (json[index] == ']')
                 {
