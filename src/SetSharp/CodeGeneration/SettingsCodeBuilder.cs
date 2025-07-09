@@ -22,7 +22,7 @@ namespace SetSharp.CodeGeneration
                 var (className, props) = queue.Dequeue();
 
                 sb.AppendLine("    /// <summary>Auto-generated from appsettings.json</summary>");
-                sb.AppendLine("    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"1.0.0\")]");
+                sb.AppendLine("    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"1.0.3\")]");
                 sb.AppendLine($"    public class {className}");
                 sb.AppendLine("    {");
 
