@@ -18,6 +18,15 @@ namespace SetSharp.Tests.CodeGeneration
         }
 
         [Fact]
+        public void GenerateClasses_SimpleObject_DoesNotGenerateSectionName()
+        {
+            var json = "{\"Key1\":\"Value1\",\"Key2\":123}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.DoesNotContain("public const string SectionName =", generatedCode);
+        }
+
+        [Fact]
         public void GenerateClasses_NestedObject_GeneratesCorrectClasses()
         {
             var json = "{\"Key1\":{\"NestedKey\":\"NestedValue\"}}";
@@ -27,6 +36,16 @@ namespace SetSharp.Tests.CodeGeneration
             Assert.Contains("public Key1Options Key1 { get; set; }", generatedCode);
             Assert.Contains("public partial class Key1Options", generatedCode);
             Assert.Contains("public string NestedKey { get; set; }", generatedCode);
+        }
+
+        [Fact]
+        public void GenerateClasses_NestedObject_GeneratesSectionName()
+        {
+            var json = "{\"Key1\":{\"NestedKey\":\"NestedValue\"}}";
+            var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
+
+            Assert.Contains("public const string SectionName = \"Key1\"", generatedCode);
+
         }
 
         [Fact]
