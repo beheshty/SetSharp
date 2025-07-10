@@ -12,7 +12,7 @@ namespace SetSharp.Tests.CodeGeneration
 
             Assert.Contains("using System.Collections.Generic;", generatedCode);
             Assert.Contains("namespace SetSharp.Configuration", generatedCode);
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public string Key1 { get; set; }", generatedCode);
             Assert.Contains("public int Key2 { get; set; }", generatedCode);
         }
@@ -23,9 +23,9 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"Key1\":{\"NestedKey\":\"NestedValue\"}}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public Key1Options Key1 { get; set; }", generatedCode);
-            Assert.Contains("public class Key1Options", generatedCode);
+            Assert.Contains("public partial class Key1Options", generatedCode);
             Assert.Contains("public string NestedKey { get; set; }", generatedCode);
         }
 
@@ -35,7 +35,7 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"Key1\":[\"Item1\",\"Item2\"]}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public List<string> Key1 { get; set; }", generatedCode);
         }
 
@@ -45,9 +45,9 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"Key1\":[{\"PropA\":1},{\"PropA\":2}]}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public List<Key1ItemOptions> Key1 { get; set; }", generatedCode);
-            Assert.Contains("public class Key1ItemOptions", generatedCode);
+            Assert.Contains("public partial class Key1ItemOptions", generatedCode);
             Assert.Contains("public int PropA { get; set; }", generatedCode);
         }
 
@@ -57,8 +57,8 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
-            Assert.Contains(@"    public class RootOptions
+            Assert.Contains("public partial class RootOptions", generatedCode);
+            Assert.Contains(@"    public partial class RootOptions
     {
     }", generatedCode);
         }
@@ -69,7 +69,7 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"Key1\":null}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public object Key1 { get; set; }", generatedCode);
         }
 
@@ -79,7 +79,7 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"class\":\"Value\"}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public string Class { get; set; }", generatedCode);
         }
 
@@ -89,7 +89,7 @@ namespace SetSharp.Tests.CodeGeneration
             var json = "{\"my.key\":\"Value\"}";
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public string Mykey { get; set; }", generatedCode);
         }
 
@@ -101,7 +101,7 @@ namespace SetSharp.Tests.CodeGeneration
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json, customNamespace);
 
             Assert.Contains("namespace MyCustomNamespace", generatedCode);
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public string Key1 { get; set; }", generatedCode);
         }
 
@@ -174,15 +174,15 @@ namespace SetSharp.Tests.CodeGeneration
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
             // Check level 1 class and property
-            Assert.Contains("public class RootOptions", generatedCode);
+            Assert.Contains("public partial class RootOptions", generatedCode);
             Assert.Contains("public Level1Options Level1 { get; set; }", generatedCode);
 
             // Check level 2 class and property
-            Assert.Contains("public class Level1Options", generatedCode);
+            Assert.Contains("public partial class Level1Options", generatedCode);
             Assert.Contains("public Level2Options Level2 { get; set; }", generatedCode);
 
             // Check level 3 property
-            Assert.Contains("public class Level2Options", generatedCode);
+            Assert.Contains("public partial class Level2Options", generatedCode);
             Assert.Contains("public string Name { get; set; }", generatedCode);
         }
 
@@ -206,7 +206,7 @@ namespace SetSharp.Tests.CodeGeneration
             var generatedCode = SettingsCodeBuilder.GenerateClasses(json);
 
             Assert.Contains("public List<MixedListItemOptions> MixedList { get; set; }", generatedCode);
-            Assert.Contains("public class MixedListItemOptions", generatedCode);
+            Assert.Contains("public partial class MixedListItemOptions", generatedCode);
             Assert.Contains("public string Name { get; set; }", generatedCode);
         }
     }

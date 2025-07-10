@@ -26,7 +26,7 @@ namespace SetSharp.CodeGeneration
 
                 sb.AppendLine("    /// <summary>Auto-generated from appsettings.json</summary>");
                 sb.AppendLine($"    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"{assemblyVersion}\")]");
-                sb.AppendLine($"    public class {className}");
+                sb.AppendLine($"    public partial class {className}");
                 sb.AppendLine("    {");
 
                 foreach (var item in props)
@@ -82,7 +82,7 @@ namespace SetSharp.CodeGeneration
         }
 
         /// <summary>
-        /// Cleans a string to make it a valid C# identifier (e.g., for a property name).
+        /// Cleans a string to make it a valid C# identifier
         /// </summary>
         /// <param name="input">The raw string to be normalized.</param>
         /// <returns>A valid C# identifier.</returns>
