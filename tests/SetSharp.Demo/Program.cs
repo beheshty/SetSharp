@@ -12,7 +12,7 @@ builder.Configuration.Sources.Clear();
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 // --- Logging Options ---
-var loggingOptions = builder.Configuration.GetSection("Logging:LogLevel").Get<LogLevelOptions>();
+var loggingOptions = builder.Configuration.GetSection(LogLevelOptions.SectionName).Get<LogLevelOptions>();
 if (loggingOptions is not null)
 {
     Console.WriteLine("Logging Options:");
@@ -22,7 +22,7 @@ if (loggingOptions is not null)
 }
 
 // --- Connection Strings ---
-var connectionOptions = builder.Configuration.GetSection("ConnectionStrings").Get<ConnectionStringsOptions>();
+var connectionOptions = builder.Configuration.GetSection(ConnectionStringsOptions.SectionName).Get<ConnectionStringsOptions>();
 if (connectionOptions is not null)
 {
     Console.WriteLine("Connection Strings:");
@@ -32,7 +32,7 @@ if (connectionOptions is not null)
 
 // --- Feature Flags ---
 var featureFlagOptions = new List<FeatureFlagsItemOptions>();
-builder.Configuration.GetSection("FeatureFlags").Bind(featureFlagOptions);
+builder.Configuration.GetSection(FeatureFlagsItemOptions.SectionName).Bind(featureFlagOptions);
 
 if (featureFlagOptions.Count != 0)
 {
