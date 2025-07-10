@@ -4,6 +4,6 @@
     {
         public string ClassName { get; set; }
         public string SectionPath { get; set; }
-        public List<SettingPropertyInfo> Properties { get; } = new List<SettingPropertyInfo>();
+        public List<SettingPropertyInfo> Properties { get; internal set; } = [];
     }
 }
