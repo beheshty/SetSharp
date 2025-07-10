@@ -5,7 +5,6 @@ namespace SetSharp.ModelBuilder
 {
     internal class ConfigurationModelBuilder
     {
-        private readonly Queue<SettingClassInfo> _workQueue = new();
         private readonly List<SettingClassInfo> _completedModels = [];
 
         internal List<SettingClassInfo> BuildFrom(Dictionary<string, object> root)
@@ -13,12 +12,6 @@ namespace SetSharp.ModelBuilder
             var rootModel = new SettingClassInfo { ClassName = "RootOptions", SectionPath = "" };
             ProcessObject(rootModel, root);
             _completedModels.Add(rootModel);
-
-            while (_workQueue.Count > 0)
-            {
-                var SettingClassInfo = _workQueue.Dequeue();
-                _completedModels.Add(SettingClassInfo);
-            }
 
             return _completedModels;
         }
@@ -84,7 +77,7 @@ namespace SetSharp.ModelBuilder
             };
 
             ProcessObject(nestedSettingClassInfo, obj);
-            _workQueue.Enqueue(nestedSettingClassInfo);
+            _completedModels.Add(nestedSettingClassInfo);
 
             return className;
         }
