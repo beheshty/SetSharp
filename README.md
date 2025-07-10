@@ -48,13 +48,13 @@ Using SetSharp is as easy as pie (and much less messy!). Here's how to get start
 
 ## Future Roadmap
 
-This section is currently under construction, much like a secret lair for future features. Stay tuned for exciting updates!
+This section is currently in development. The following is a list of features I am planning for future updates.
 
-*   [ ] **Option Pattern Integration:** We're planning to add helper methods to easily register your generated configuration classes with the `IOptions` pattern, making dependency injection a breeze.
-*   [ ] **`SectionName` Property:** Imagine a world where you can instantly know which part of your JSON a class maps to! We're looking into adding a `SectionName` property to each generated class for easier identification and potentially other benefits.
-*   [ ] **Partial Classes for Customization:** To give you even more control, we'll be making the generated classes `partial`, allowing you to extend them with your own logic or properties without touching the generated code.
+* [ ] **Partial Classes for Customization:** To give you more control, I will be making the generated classes `partial`. This will allow you to extend them with your own logic or properties without altering the generated code.
+* [ ] **Option Pattern Integration:** I am planning to add helper methods to easily register the generated configuration classes with the `IOptions` pattern, which will make dependency injection more straightforward.
+* [ ] **`SectionName` Property:** I am looking into adding a `SectionName` property to each generated class. This will make it easier to identify which part of the JSON a class maps to and may offer other benefits.
 
 ## Contributing
 
-We love contributions! Whether it's a new feature, a bug fix, or an improvement to the documentation, your help is always welcome. SetSharp is an open-source project, and we believe in the power of community. If you have ideas, suggestions, or want to dive into the code, don't hesitate to open an issue or submit a pull request. Let's make SetSharp even sharper together!
+I welcome contributions to this project. Whether it's a new feature, a bug fix, or an improvement to the documentation, your help is appreciated. SetSharp is an open-source project, and I believe in the power of community collaboration. If you have ideas, suggestions, or want to contribute to the code, please feel free to open an issue or submit a pull request. Together, we can make SetSharp even sharper.
 
