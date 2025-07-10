@@ -50,7 +50,7 @@ Using SetSharp is as easy as pie (and much less messy!). Here's how to get start
 
 This section is currently in development. The following is a list of features I am planning for future updates.
 
-* [ ] **Partial Classes for Customization:** To give you more control, I will be making the generated classes `partial`. This will allow you to extend them with your own logic or properties without altering the generated code.
+* [x] **Partial Classes for Customization:** To give you more control, I will be making the generated classes `partial`. This will allow you to extend them with your own logic or properties without altering the generated code.
 * [ ] **Option Pattern Integration:** I am planning to add helper methods to easily register the generated configuration classes with the `IOptions` pattern, which will make dependency injection more straightforward.
 * [ ] **`SectionName` Property:** I am looking into adding a `SectionName` property to each generated class. This will make it easier to identify which part of the JSON a class maps to and may offer other benefits.
 
