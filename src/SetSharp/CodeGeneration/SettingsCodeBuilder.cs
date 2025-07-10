@@ -14,7 +14,7 @@ namespace SetSharp.CodeGeneration
             var sb = new StringBuilder();
 
             var queue = new Queue<ClassGenerationInfo>();
-            queue.Enqueue(new ClassGenerationInfo("RootOptions", null, root));
+            queue.Enqueue(new ClassGenerationInfo("RootOptions", "", root));
 
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine();
@@ -25,9 +25,9 @@ namespace SetSharp.CodeGeneration
             {
                 var classInfo = queue.Dequeue();
 
-                if (!string.IsNullOrEmpty(classInfo.OriginalJsonKey))
+                if (!string.IsNullOrEmpty(classInfo.SectionPath))
                 {
-                    sb.AppendLine($"    /// <summary>Represents the '{classInfo.OriginalJsonKey}' section from the configuration.</summary>");
+                    sb.AppendLine($"    /// <summary>Represents the '{classInfo.SectionPath}' section from the configuration.</summary>");
                 }
                 else
                 {
@@ -37,17 +37,27 @@ namespace SetSharp.CodeGeneration
                 sb.AppendLine($"    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"{assemblyVersion}\")]");
                 sb.AppendLine($"    public partial class {classInfo.ClassName}");
                 sb.AppendLine("    {");
+                if (!string.IsNullOrEmpty(classInfo.SectionPath))
+                {
+                    sb.AppendLine($"        /// <summary>The configuration section name for this class: \"{classInfo.SectionPath}\"</summary>");
+                    sb.AppendLine($"        public const string SectionName = \"{classInfo.SectionPath}\";");
+                    sb.AppendLine();
+                }
 
                 foreach (var item in classInfo.Properties)
                 {
+                    var childSectionPath = string.IsNullOrEmpty(classInfo.SectionPath)
+                    ? item.Key
+                    : $"{classInfo.SectionPath}:{item.Key}";
+
                     string type = item.Value switch
                     {
                         string => "string",
                         int => "int",
                         double => "double",
                         bool => "bool",
-                        Dictionary<string, object> obj => AddNestedClass(queue, item.Key, obj),
-                        List<object> list => InferListType(queue, item.Key, list),
+                        Dictionary<string, object> obj => AddNestedClass(queue, childSectionPath, item.Key, obj),
+                        List<object> list => InferListType(queue, childSectionPath, item.Key, list),
                         _ => "object"
                     };
                     var normalizedName = NormalizeName(item.Key);
@@ -66,14 +76,14 @@ namespace SetSharp.CodeGeneration
             return sb.ToString();
         }
 
-        private static string AddNestedClass(Queue<ClassGenerationInfo> queue, string originalKey, Dictionary<string, object> obj)
+        private static string AddNestedClass(Queue<ClassGenerationInfo> queue, string sectionPath, string originalKey, Dictionary<string, object> obj)
         {
             var className = $"{NormalizeName(originalKey)}Options";
-            queue.Enqueue(new ClassGenerationInfo(className, originalKey, obj));
+            queue.Enqueue(new ClassGenerationInfo(className, sectionPath, obj));
             return className;
         }
 
-        private static string InferListType(Queue<ClassGenerationInfo> queue, string key, List<object> list)
+        private static string InferListType(Queue<ClassGenerationInfo> queue, string sectionPath, string key, List<object> list)
         {
             if (list.Count == 0) return "List<object>";
 
@@ -85,7 +95,7 @@ namespace SetSharp.CodeGeneration
                 long => "long",
                 double => "double",
                 bool => "bool",
-                Dictionary<string, object> obj => AddNestedClass(queue, $"{key}Item", obj),
+                Dictionary<string, object> obj => AddNestedClass(queue, sectionPath, $"{key}Item", obj),
                 _ => "object"
             };
 
