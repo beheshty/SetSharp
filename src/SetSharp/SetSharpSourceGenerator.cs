@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using SetSharp.CodeGeneration;
+using SetSharp.Helpers;
+using SetSharp.ModelBuilder;
 using System.Text;
 
 namespace SetSharp
@@ -24,7 +26,10 @@ namespace SetSharp
 
                     try
                     {
-                        var sourceCode = SettingsCodeBuilder.GenerateClasses(content.ToString());
+                        var json = SetSharpJsonParser.Parse(content.ToString());
+                        var modelBuilder = new ConfigurationModelBuilder();
+                        var classes = modelBuilder.BuildFrom(json);
+                        var sourceCode = PocoGenerator.Generate(classes);
                         return (sourceCode, (Diagnostic?)null);
                     }
                     catch (Exception e)

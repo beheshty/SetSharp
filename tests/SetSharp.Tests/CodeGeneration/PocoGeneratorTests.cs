@@ -1,0 +1,108 @@
+﻿using SetSharp.CodeGeneration;
+using SetSharp.Models;
+using System.Reflection;
+
+namespace SetSharp.Tests.CodeGeneration
+{
+    public class PocoGeneratorTests
+    {
+        [Fact]
+        public void Generate_WithCustomNamespace_ShouldUseCustomNamespace()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo { ClassName = "MySettings" }
+            };
+            var customNamespace = "My.Custom.Namespace";
+
+            // Act
+            var result = PocoGenerator.Generate(classes, customNamespace);
+
+            // Assert
+            Assert.Contains($"namespace {customNamespace}", result);
+        }
+
+        [Fact]
+        public void Generate_WithMultipleClasses_ShouldGenerateAllClasses()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo { ClassName = "FirstSettings" },
+                new SettingClassInfo { ClassName = "SecondSettings" }
+            };
+
+            // Act
+            var result = PocoGenerator.Generate(classes);
+
+            // Assert
+            Assert.Contains("public partial class FirstSettings", result);
+            Assert.Contains("public partial class SecondSettings", result);
+        }
+
+        [Fact]
+        public void Generate_WithDifferentPropertyAndJsonKey_ShouldAddConfigurationKeyNameAttribute()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo
+                {
+                    ClassName = "MySettings",
+                    Properties = new List<SettingPropertyInfo>
+                    {
+                        new SettingPropertyInfo { PropertyName = "LogLevel", PropertyType = "string", OriginalJsonKey = "Logging:LogLevel:Default" }
+                    }
+                }
+            };
+
+            // Act
+            var result = PocoGenerator.Generate(classes);
+
+            // Assert
+            Assert.Contains("[Microsoft.Extensions.Configuration.ConfigurationKeyName(\"Logging:LogLevel:Default\")]", result);
+            Assert.Contains("public string LogLevel { get; set; }", result);
+        }
+
+        [Fact]
+        public void Generate_WithNoSectionPath_ShouldGenerateRootClassSummaryAndNoSectionNameConstant()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo
+                {
+                    ClassName = "RootSettings",
+                    SectionPath = "" // or null
+                }
+            };
+
+            // Act
+            var result = PocoGenerator.Generate(classes);
+
+            // Assert
+            Assert.Contains("/// <summary>Represents the root of the configuration settings.</summary>", result);
+            Assert.DoesNotContain("public const string SectionName", result);
+        }
+
+        [Fact]
+        public void Generate_WithEmptyClassList_ShouldGenerateEmptyNamespace()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>();
+            var expected = @"using System.Collections.Generic;
+
+namespace SetSharp.Configuration
+{
+}
+";
+
+            // Act
+            var result = PocoGenerator.Generate(classes);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+    }
+}

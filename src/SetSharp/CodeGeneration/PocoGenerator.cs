@@ -1,0 +1,73 @@
+﻿using SetSharp.Models;
+using System.Reflection;
+using System.Text;
+
+namespace SetSharp.CodeGeneration
+{
+    internal static class PocoGenerator
+    {
+        internal static string Generate(List<SettingClassInfo> classes, string @namespace = "SetSharp.Configuration")
+        {
+            var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var sb = new StringBuilder();
+
+            sb.AppendLine("using System.Collections.Generic;");
+            sb.AppendLine();
+            sb.AppendLine($"namespace {@namespace}");
+            sb.AppendLine("{");
+
+            foreach (var SettingClassInfo in classes)
+            {
+                sb.AppendLine();
+                AddClassSummary(sb, SettingClassInfo);
+                sb.AppendLine($"    [System.CodeDom.Compiler.GeneratedCode(\"SetSharp\", \"{assemblyVersion}\")]");
+                sb.AppendLine($"    public partial class {SettingClassInfo.ClassName}");
+                sb.AppendLine("    {");
+
+                AddSectionNameConstant(sb, SettingClassInfo);
+
+                foreach (var property in SettingClassInfo.Properties)
+                {
+                    AddProperty(sb, property);
+                }
+
+                sb.AppendLine("    }");
+            }
+
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        private static void AddClassSummary(StringBuilder sb, SettingClassInfo SettingClassInfo)
+        {
+            if (!string.IsNullOrEmpty(SettingClassInfo.SectionPath))
+            {
+                sb.AppendLine($"    /// <summary>Represents the '{SettingClassInfo.SectionPath}' section from the configuration.</summary>");
+            }
+            else
+            {
+                sb.AppendLine("    /// <summary>Represents the root of the configuration settings.</summary>");
+            }
+        }
+
+        private static void AddSectionNameConstant(StringBuilder sb, SettingClassInfo SettingClassInfo)
+        {
+            if (!string.IsNullOrEmpty(SettingClassInfo.SectionPath))
+            {
+                sb.AppendLine($"        /// <summary>The configuration section name for this class: \"{SettingClassInfo.SectionPath}\"</summary>");
+                sb.AppendLine($"        public const string SectionName = \"{SettingClassInfo.SectionPath}\";");
+                sb.AppendLine();
+            }
+        }
+
+        private static void AddProperty(StringBuilder sb, SettingPropertyInfo property)
+        {
+            if (property.PropertyName != property.OriginalJsonKey)
+            {
+                sb.AppendLine($"        [Microsoft.Extensions.Configuration.ConfigurationKeyName(\"{property.OriginalJsonKey}\")]");
+            }
+            sb.AppendLine($"        public {property.PropertyType} {property.PropertyName} {{ get; set; }}");
+            sb.AppendLine();
+        }
+    }
+}
