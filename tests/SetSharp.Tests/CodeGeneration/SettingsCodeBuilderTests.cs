@@ -2,7 +2,7 @@ using SetSharp.CodeGeneration;
 
 namespace SetSharp.Tests.CodeGeneration
 {
-    public partial class SettingsCodeBuilderTests
+    public class SettingsCodeBuilderTests
     {
         [Fact]
         public void GenerateClasses_SimpleObject_GeneratesCorrectClass()
