@@ -3,13 +3,13 @@
     internal class ClassGenerationInfo
     {
         public string ClassName { get; }
-        public string? OriginalJsonKey { get; }
+        public string SectionPath { get; }
         public Dictionary<string, object> Properties { get; }
 
-        public ClassGenerationInfo(string className, string? originalJsonKey, Dictionary<string, object> properties)
+        public ClassGenerationInfo(string className, string sectionPath, Dictionary<string, object> properties)
         {
             ClassName = className;
-            OriginalJsonKey = originalJsonKey;
+            SectionPath = sectionPath;
             Properties = properties;
         }
     }
