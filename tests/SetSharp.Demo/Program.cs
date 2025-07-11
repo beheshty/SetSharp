@@ -1,18 +1,22 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using SetSharp.Configuration;
 
 
 Console.WriteLine("Configuration Explorer is live! Let's see what secrets your appsettings hold...\n");
 
 var builder = Host.CreateApplicationBuilder(args);
-
 builder.Configuration.Sources.Clear();
-
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
+// --- Register All Your Settings with a Single Call ---
+builder.Services.AddAllGeneratedOptions(builder.Configuration);
+
+using var host = builder.Build();
 // --- Logging Options ---
-var loggingOptions = builder.Configuration.GetSection(LogLevelOptions.SectionName).Get<LogLevelOptions>();
+var loggingOptions = host.Services.GetRequiredService<IOptions<LogLevelOptions>>().Value;
 if (loggingOptions is not null)
 {
     Console.WriteLine("Logging Options:");
@@ -22,7 +26,7 @@ if (loggingOptions is not null)
 }
 
 // --- Connection Strings ---
-var connectionOptions = builder.Configuration.GetSection(ConnectionStringsOptions.SectionName).Get<ConnectionStringsOptions>();
+var connectionOptions = host.Services.GetRequiredService<IOptions<ConnectionStringsOptions>>().Value;
 if (connectionOptions is not null)
 {
     Console.WriteLine("Connection Strings:");
@@ -31,10 +35,8 @@ if (connectionOptions is not null)
 }
 
 // --- Feature Flags ---
-var featureFlagOptions = new List<FeatureFlagsItemOptions>();
-builder.Configuration.GetSection(FeatureFlagsItemOptions.SectionName).Bind(featureFlagOptions);
-
-if (featureFlagOptions.Count != 0)
+var featureFlagOptions = host.Services.GetRequiredService<IOptions<List<FeatureFlagsItemOptions>>>().Value;
+if (featureFlagOptions is not null && featureFlagOptions.Count != 0)
 {
     Console.WriteLine("Feature Flag Options:");
     for (int i = 0; i < featureFlagOptions.Count; i++)

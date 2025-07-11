@@ -5,5 +5,6 @@
         public string ClassName { get; set; }
         public string SectionPath { get; set; }
         public List<SettingPropertyInfo> Properties { get; internal set; } = [];
+        public bool IsFromCollection { get; set; }
     }
 }
