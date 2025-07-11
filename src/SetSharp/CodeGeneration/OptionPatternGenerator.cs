@@ -25,6 +25,34 @@ namespace SetSharp.CodeGeneration
 
             var optionClasses = classes.Where(c => !string.IsNullOrEmpty(c.SectionPath)).ToList();
 
+            AppendAddOptionMethods(sb, optionClasses);
+
+            if (optionClasses.Any())
+            {
+                AppendAddAllOptionsMethod(sb, optionClasses);
+            }
+
+            sb.AppendLine("    }");
+            sb.AppendLine("}");
+
+            return sb.ToString();
+        }
+
+        private static void AppendAddAllOptionsMethod(StringBuilder sb, List<SettingClassInfo> optionClasses)
+        {
+            sb.AppendLine("        /// <summary>Registers all generated configuration classes with the dependency injection container.</summary>");
+            sb.AppendLine("        public static IServiceCollection AddAllGeneratedOptions(this IServiceCollection services, IConfiguration configuration)");
+            sb.AppendLine("        {");
+            foreach (var classInfo in optionClasses)
+            {
+                sb.AppendLine($"            services.Add{classInfo.ClassName}(configuration);");
+            }
+            sb.AppendLine("            return services;");
+            sb.AppendLine("        }");
+        }
+
+        private static void AppendAddOptionMethods(StringBuilder sb, List<SettingClassInfo> optionClasses)
+        {
             foreach (var classInfo in optionClasses)
             {
                 sb.AppendLine($"        /// <summary>Registers the <see cref=\"{classInfo.ClassName}\"/> class with the dependency injection container.</summary>");
@@ -35,24 +63,6 @@ namespace SetSharp.CodeGeneration
                 sb.AppendLine("        }");
                 sb.AppendLine();
             }
-
-            if (optionClasses.Any())
-            {
-                sb.AppendLine("        /// <summary>Registers all generated configuration classes with the dependency injection container.</summary>");
-                sb.AppendLine("        public static IServiceCollection AddAllGeneratedOptions(this IServiceCollection services, IConfiguration configuration)");
-                sb.AppendLine("        {");
-                foreach (var classInfo in optionClasses)
-                {
-                    sb.AppendLine($"            services.Add{classInfo.ClassName}(configuration);");
-                }
-                sb.AppendLine("            return services;");
-                sb.AppendLine("        }");
-            }
-
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-
-            return sb.ToString();
         }
     }
 }
