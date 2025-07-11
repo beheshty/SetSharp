@@ -55,10 +55,16 @@ namespace SetSharp.CodeGeneration
         {
             foreach (var classInfo in optionClasses)
             {
+                string configurationType = classInfo.IsFromCollection
+                    ? $"System.Collections.Generic.List<{classInfo.ClassName}>"
+                    : classInfo.ClassName;
+
                 sb.AppendLine($"        /// <summary>Registers the <see cref=\"{classInfo.ClassName}\"/> class with the dependency injection container.</summary>");
                 sb.AppendLine($"        public static IServiceCollection Add{classInfo.ClassName}(this IServiceCollection services, IConfiguration configuration)");
                 sb.AppendLine("        {");
-                sb.AppendLine($"            services.Configure<{classInfo.ClassName}>(configuration.GetSection({classInfo.ClassName}.SectionName));");
+
+                sb.AppendLine($"            services.Configure<{configurationType}>(configuration.GetSection({classInfo.ClassName}.SectionName));");
+
                 sb.AppendLine("            return services;");
                 sb.AppendLine("        }");
                 sb.AppendLine();
