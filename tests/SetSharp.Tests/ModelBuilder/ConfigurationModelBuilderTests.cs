@@ -136,7 +136,7 @@ namespace SetSharp.Tests.ModelBuilder
 
             // Test Nested List Item Class
             var endpointItemModel = result.First(c => c.ClassName == "EndpointsItemOptions");
-            Assert.Equal("EndpointsItem", endpointItemModel.SectionPath);
+            Assert.Equal("Endpoints", endpointItemModel.SectionPath);
             Assert.Equal(2, endpointItemModel.Properties.Count);
             Assert.Contains(endpointItemModel.Properties, p => p.PropertyName == "Name" && p.PropertyType == "string");
             Assert.Contains(endpointItemModel.Properties, p => p.PropertyName == "Url" && p.PropertyType == "string");
