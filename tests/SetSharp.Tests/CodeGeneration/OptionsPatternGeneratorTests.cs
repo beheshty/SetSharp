@@ -116,5 +116,99 @@ namespace SetSharp.Tests.CodeGeneration
             Assert.DoesNotContain("AddRootOptions", result);
             Assert.DoesNotContain("AddAllGeneratedOptions", result);
         }
+
+        [Fact]
+        public void Generate_ForStandardObject_UsesClassNameInConfigure()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo
+                {
+                    ClassName = "DatabaseOptions",
+                    SectionPath = "Database",
+                    IsFromCollection = false // Explicitly a standard object
+                }
+            };
+
+            // Act
+            var result = OptionsPatternGenerator.Generate(classes);
+
+            // Assert
+            // Verify the method signature is correct
+            Assert.Contains("public static IServiceCollection AddDatabaseOptions(this IServiceCollection services, IConfiguration configuration)", result);
+
+            // Verify it generates the standard Configure<T> call
+            Assert.Contains("services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));", result);
+
+            // Verify it does NOT generate the List<T> version
+            Assert.DoesNotContain("services.Configure<System.Collections.Generic.List<DatabaseOptions>>", result);
+        }
+
+        [Fact]
+        public void Generate_ForListObject_UsesListOfClassNameInConfigure()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo
+                {
+                    ClassName = "EndpointOptions",
+                    SectionPath = "Endpoints",
+                    IsFromCollection = true // This class represents an item in a collection
+                }
+            };
+
+            // Act
+            var result = OptionsPatternGenerator.Generate(classes);
+
+            // Assert
+            // Verify the method signature is correct (it doesn't change)
+            Assert.Contains("public static IServiceCollection AddEndpointOptions(this IServiceCollection services, IConfiguration configuration)", result);
+
+            // Verify it generates the Configure<List<T>> call with the fully qualified name
+            Assert.Contains("services.Configure<System.Collections.Generic.List<EndpointOptions>>(configuration.GetSection(EndpointOptions.SectionName));", result);
+
+            // Verify it does NOT generate the standard T version
+            Assert.DoesNotContain("services.Configure<EndpointOptions>(configuration.GetSection(EndpointOptions.SectionName));", result);
+        }
+
+        [Fact]
+        public void Generate_ForMixedObjectTypes_UsesCorrectConfigureTypeForEach()
+        {
+            // Arrange
+            var classes = new List<SettingClassInfo>
+            {
+                new SettingClassInfo
+                {
+                    ClassName = "ApiOptions",
+                    SectionPath = "Api",
+                    IsFromCollection = false // Standard object
+                },
+                new SettingClassInfo
+                {
+                    ClassName = "FirewallRuleOptions",
+                    SectionPath = "FirewallRules",
+                    IsFromCollection = true // Collection item object
+                }
+            };
+
+            // Act
+            var result = OptionsPatternGenerator.Generate(classes);
+
+            // Assert
+            // Check standard object generation
+            Assert.Contains("public static IServiceCollection AddApiOptions(this IServiceCollection services, IConfiguration configuration)", result);
+            Assert.Contains("services.Configure<ApiOptions>(configuration.GetSection(ApiOptions.SectionName));", result);
+
+            // Check collection object generation
+            Assert.Contains("public static IServiceCollection AddFirewallRuleOptions(this IServiceCollection services, IConfiguration configuration)", result);
+            Assert.Contains("services.Configure<System.Collections.Generic.List<FirewallRuleOptions>>(configuration.GetSection(FirewallRuleOptions.SectionName));", result);
+
+            // Check that the AddAll method includes both
+            Assert.Contains("public static IServiceCollection AddAllGeneratedOptions(this IServiceCollection services, IConfiguration configuration)", result);
+            Assert.Contains("services.AddApiOptions(configuration);", result);
+            Assert.Contains("services.AddFirewallRuleOptions(configuration);", result);
+        }
     }
 }
