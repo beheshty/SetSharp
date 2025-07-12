@@ -2,8 +2,8 @@
 {
     internal class SettingPropertyInfo
     {
-        public string PropertyType { get; set; }
-        public string PropertyName { get; set; }
-        public string OriginalJsonKey { get; set; }
+        internal string PropertyType { get; set; }
+        internal string PropertyName { get; set; }
+        internal string OriginalJsonKey { get; set; }
     }
 }

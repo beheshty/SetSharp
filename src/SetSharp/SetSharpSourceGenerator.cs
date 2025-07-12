@@ -5,6 +5,8 @@ using SetSharp.Helpers;
 using SetSharp.ModelBuilder;
 using SetSharp.Models;
 using System.Text;
+using Microsoft.CodeAnalysis.Diagnostics;
+using SetSharp.Diagnostics;
 
 namespace SetSharp
 {
@@ -16,53 +18,137 @@ namespace SetSharp
             IncrementalValuesProvider<AdditionalText> textFiles =
                 context.AdditionalTextsProvider.Where(static file => Path.GetFileName(file.Path).Equals("appsettings.json"));
 
-            IncrementalValuesProvider<(List<SettingClassInfo>? classes, Diagnostic? diagnostic)> modelProvider =
+            IncrementalValuesProvider<(List<SettingClassInfo>? Classes, bool GenerateOptions, Diagnostic? Diagnostic)> settingsAndOptionsProvider =
                 textFiles.Select((text, cancellationToken) =>
                 {
                     var content = text.GetText(cancellationToken);
                     if (content is null)
                     {
-                        return (null, null);
+                        return ((List<SettingClassInfo>?)null, true, null);
                     }
 
                     try
                     {
                         var json = SetSharpJsonParser.Parse(content.ToString());
+
+                        bool generateOptions = ReadSetSharpSettingsIfProvided(json);
+
                         var modelBuilder = new ConfigurationModelBuilder();
                         var classes = modelBuilder.BuildFrom(json);
-                        return (classes, (Diagnostic?)null);
+                        return (classes, generateOptions, (Diagnostic?)null);
                     }
                     catch (Exception e)
                     {
-                        var diagnostic = Diagnostic.Create(
-                            new DiagnosticDescriptor("CG001", "App settings generation failed", e.ToString(), "Error", DiagnosticSeverity.Error, true),
-                            Location.None);
-                        return ((List<SettingClassInfo>?)null, diagnostic);
+                        var diagnostic = Diagnostic.Create(DiagnosticDescriptors.ParsingFailedError, Location.None, e.Message);
+                        return ((List<SettingClassInfo>?)null, true, diagnostic);
                     }
                 });
 
-            context.RegisterSourceOutput(modelProvider, (spc, source) =>
+            var combinedProvider = settingsAndOptionsProvider.Combine(context.CompilationProvider);
+
+            var finalProvider = combinedProvider.Select((source, cancellationToken) =>
             {
-                if (source.diagnostic != null)
+                var ((classes, generateOptions, diagnostic), compilation) = source;
+
+                // If parsing already failed, just pass the error through.
+                if (diagnostic != null)
                 {
-                    spc.ReportDiagnostic(source.diagnostic);
+                    return new SourceGenerationModel(null, false, diagnostic);
                 }
 
-                if (source.classes != null)
+                var dependencyDiagnostic = CheckDependencies(compilation, generateOptions);
+
+                if (dependencyDiagnostic != null)
                 {
-                    var pocoSourceCode = PocoGenerator.Generate(source.classes);
-                    spc.AddSource("AppSettings.g.cs", SourceText.From(pocoSourceCode, Encoding.UTF8));
+                    return new SourceGenerationModel(classes, generateOptions, dependencyDiagnostic);
                 }
+
+                return new SourceGenerationModel(classes, generateOptions, null);
             });
 
-            context.RegisterSourceOutput(modelProvider, (spc, source) =>
+            context.RegisterSourceOutput(finalProvider, (spc, model) =>
             {
-                if (source.classes != null && source.classes.Any())
+                if (model.Diagnostic != null)
                 {
-                    var extensionsSourceCode = OptionsPatternGenerator.Generate(source.classes);
-                    spc.AddSource("OptionsExtensions.g.cs", SourceText.From(extensionsSourceCode, Encoding.UTF8));
+                    spc.ReportDiagnostic(model.Diagnostic);
+                }
+
+                // Always generate the POCO classes if parsing was successful.
+                if (model.Diagnostic is null)
+                {
+                    if (model.Classes != null)
+                    {
+                        var pocoSourceCode = PocoGenerator.Generate(model.Classes);
+                        spc.AddSource("AppSettings.g.cs", SourceText.From(pocoSourceCode, Encoding.UTF8));
+                    }
+
+                    if (model.GenerateOptions && model.Classes is { Count: > 0 })
+                    {
+                        var extensionsSourceCode = OptionsPatternGenerator.Generate(model.Classes);
+                        spc.AddSource("OptionsExtensions.g.cs", SourceText.From(extensionsSourceCode, Encoding.UTF8));
+                    }
                 }
             });
         }
+
+        private static bool ReadSetSharpSettingsIfProvided(Dictionary<string, object> json)
+        {
+            if (json.TryGetValue("SetSharp", out var setSharpObject)
+                                            && setSharpObject is Dictionary<string, object> setSharpDict)
+            {
+                if (setSharpDict.TryGetValue("OptionPatternGenerationEnabled", out var enabledValue)
+                    && bool.TryParse(enabledValue?.ToString(), out var parsedBool))
+                {
+                    return parsedBool;
+                }
+            }
+
+            // Default to true if the setting is not present.
+            return true;
+        }
+
+        /// <summary>
+        /// Checks for required dependencies and returns a Diagnostic if any are missing.
+        /// </summary>
+        /// <returns>A Diagnostic object if a dependency is missing; otherwise, null.</returns>
+        private Diagnostic? CheckDependencies(Compilation compilation, bool checkForOptionsPattern)
+        {
+            if (compilation.GetTypeByMetadataName("Microsoft.Extensions.Configuration.ConfigurationKeyNameAttribute") == null)
+            {
+                return Diagnostic.Create(DiagnosticDescriptors.MissingBaseDependencyError, Location.None);
+            }
+
+            if (!checkForOptionsPattern)
+            {
+                return null;
+            }
+
+            var iServiceCollectionType = compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
+            var iConfigurationType = compilation.GetTypeByMetadataName("Microsoft.Extensions.Configuration.IConfiguration");
+
+            if (iServiceCollectionType == null || iConfigurationType == null)
+            {
+                return Diagnostic.Create(DiagnosticDescriptors.MissingOptionsDependencyError, Location.None);
+            }
+
+            var extensionsType = compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions");
+            if (extensionsType == null)
+            {
+                return Diagnostic.Create(DiagnosticDescriptors.MissingOptionsDependencyError, Location.None);
+            }
+
+            bool hasConfigureMethod = extensionsType.GetMembers("Configure")
+                .OfType<IMethodSymbol>()
+                .Any(m => m.IsGenericMethod &&
+                          m.IsExtensionMethod &&
+                          m.Parameters.Length == 2 &&
+                          SymbolEqualityComparer.Default.Equals(m.Parameters[0].Type, iServiceCollectionType) &&
+                          SymbolEqualityComparer.Default.Equals(m.Parameters[1].Type, iConfigurationType));
+
+            return hasConfigureMethod ? null : Diagnostic.Create(DiagnosticDescriptors.MissingOptionsDependencyError, Location.None);
+        }
     }
+
+
 }
+
