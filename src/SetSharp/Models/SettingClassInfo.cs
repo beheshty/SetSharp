@@ -2,9 +2,9 @@
 {
     internal class SettingClassInfo
     {
-        public string ClassName { get; set; }
-        public string SectionPath { get; set; }
-        public List<SettingPropertyInfo> Properties { get; internal set; } = [];
-        public bool IsFromCollection { get; set; }
+        internal string ClassName { get; set; }
+        internal string SectionPath { get; set; }
+        internal List<SettingPropertyInfo> Properties { get; set; } = [];
+        internal bool IsFromCollection { get; set; }
     }
 }
