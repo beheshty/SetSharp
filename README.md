@@ -172,4 +172,4 @@ Contributions are welcome! Whether it's a new feature idea, a bug report, or a p
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/beheshty/SetSharp/blob/master/LICENSE.txt) file for details.
