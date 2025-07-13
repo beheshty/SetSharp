@@ -38,7 +38,7 @@ Follow these steps to integrate SetSharp into your .NET project.
 Add the SetSharp NuGet package to your project using the .NET CLI or the NuGet Package Manager.
 
 ```bash
-dotnet add package SetSharp --version 1.3.0
+dotnet add package SetSharp
 ```
 
 ### 2. Add `appsettings.json` to your Project File
