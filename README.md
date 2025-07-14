@@ -18,16 +18,15 @@ Say goodbye to magic strings and runtime errors. With SetSharp, your configurati
 
 ## Prerequisites
 
-Before using SetSharp, ensure your project has the following NuGet packages installed, as they are required for the `IOptions` pattern integration:
+SetSharp has the following dependencies that you need to be aware of:
 
--   `Microsoft.Extensions.Options.ConfigurationExtensions`
--   `Microsoft.Extensions.DependencyInjection`
+-   **`Microsoft.Extensions.Configuration.Abstractions`**
+    This is a fundamental dependency and is **always required** for the generator to function. If this package is missing, you will receive a compile-time error (`SSG003`).
 
-If these packages are missing and `IOptions` generation is enabled (which it is by default), you will encounter one of the following compile-time errors:
--   **`SSG002`**: Indicates that dependencies for `IOptions` generation are missing.
--   **`SSG003`**: Indicates that a base dependency (`Microsoft.Extensions.Configuration.Abstractions`) is missing.
+-   **`Microsoft.Extensions.Options.ConfigurationExtensions`**
+    This package is required **only if** you are using the automatic `IOptions` pattern generation (which is enabled by default). If this package is missing while the feature is active, you will receive a compile-time error (`SSG002`).
 
-*Note: If you disable `IOptions` pattern generation (see the Configuration section), the `Microsoft.Extensions.Options.ConfigurationExtensions` package is no longer required.*
+*You can disable the `IOptions` pattern feature and remove this second dependency by setting `SetSharp:OptionPatternGenerationEnabled` to `false` in your `appsettings.json`. See the Configuration section for details.*
 
 ## Getting Started
 
