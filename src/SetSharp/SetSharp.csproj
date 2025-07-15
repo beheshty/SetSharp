@@ -10,7 +10,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 		<PackageId>SetSharp</PackageId>
-		<Version>1.3.0</Version>
+		<Version>1.3.2</Version>
 		<PackageIcon>icon.png</PackageIcon>
 		<Authors>Amirhossein Beheshti</Authors>
 		<Description>Generates strongly typed settings classes from appsettings.json using Source Generators.</Description>

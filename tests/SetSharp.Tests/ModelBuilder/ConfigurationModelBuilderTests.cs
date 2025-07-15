@@ -35,6 +35,28 @@ namespace SetSharp.Tests.ModelBuilder
         }
 
         [Fact]
+        public void BuildFrom_WithSetSharpSection_ShouldIgnoreSetSharp()
+        {
+            // Arrange
+            var builder = new ConfigurationModelBuilder();
+            var root = new Dictionary<string, object>
+            {
+                { "ConnectionString", "Server=.;Database=Test;"},
+                { "SetSharp", new Dictionary<string, object>() }
+            };
+
+            // Act
+            var result = builder.BuildFrom(root);
+
+            // Assert
+            var rootModel = Assert.Single(result);
+            Assert.Equal("RootOptions", rootModel.ClassName);
+            Assert.Equal("", rootModel.SectionPath);
+
+            Assert.DoesNotContain(result, c => c.ClassName == "SetSharp");
+        }
+
+        [Fact]
         public void BuildFrom_WithNestedObject_ShouldCreateSeparateClassModel()
         {
             // Arrange
