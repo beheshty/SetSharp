@@ -165,6 +165,16 @@ Add the following section to your `appsettings.json`:
 }
 ```
 
+## Future Plans
+
+SetSharp is actively being developed. Here are some of the features and improvements planned for future releases:
+
+-   **Custom Source File:** Allowing users to specify custom configuration file names (e.g., `my-settings.json` or `appsettings.development.json`) instead of being limited to `appsettings.json`.
+-   **Enhanced Array Support:** Improved handling of JSON arrays. The goal is to intelligently generate `List<T>` properties for arrays of complex objects.
+
+Have an idea or a feature request? Feel free to open an issue on GitHub to discuss it!
+
+
 ## Contributing
 
 Contributions are welcome! Whether it's a new feature idea, a bug report, or a pull request, your input is valued. Please feel free to open an issue to discuss your ideas or submit a pull request with your improvements.
