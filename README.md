@@ -2,7 +2,7 @@
 
 [![NuGet Version](https://img.shields.io/nuget/v/SetSharp.svg?style=flat-square)](https://www.nuget.org/packages/SetSharp/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/SetSharp.svg?style=flat-square)](https://www.nuget.org/packages/SetSharp/)
-<!-- [![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/your-repo/dotnet.yml?branch=main&style=flat-square)](https://github.com/beheshty/SetSharp/actions) -->
+ <!-- [![Build Status](https://img.shields.io/github/actions/workflow/status/beheshty/SetSharp/dotnet.yml?branch=master&style=flat-square)](https://github.com/beheshty/SetSharp/actions) -->
 
 **Tired of manually mapping `appsettings.json` to C# classes? SetSharp is a powerful .NET source generator that automatically creates strongly-typed C# configuration classes directly from your JSON settings, seamlessly integrating with the `IOptions` pattern.**
 
