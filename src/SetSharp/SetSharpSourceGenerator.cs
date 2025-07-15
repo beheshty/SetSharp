@@ -18,29 +18,29 @@ namespace SetSharp
             IncrementalValuesProvider<AdditionalText> textFiles =
                 context.AdditionalTextsProvider.Where(static file => Path.GetFileName(file.Path).Equals("appsettings.json"));
 
-            IncrementalValuesProvider<(List<SettingClassInfo>? Classes, bool GenerateOptions, Diagnostic? Diagnostic)> settingsAndOptionsProvider =
+            IncrementalValuesProvider<(List<SettingClassInfo>? Classes, SetSharpSettings SetSharpOptions, Diagnostic? Diagnostic)> settingsAndOptionsProvider =
                 textFiles.Select((text, cancellationToken) =>
                 {
                     var content = text.GetText(cancellationToken);
                     if (content is null)
                     {
-                        return ((List<SettingClassInfo>?)null, true, null);
+                        return ((List<SettingClassInfo>?)null, new SetSharpSettings(), null);
                     }
 
                     try
                     {
                         var json = SetSharpJsonParser.Parse(content.ToString());
 
-                        bool generateOptions = ReadSetSharpSettingsIfProvided(json);
+                        var setSharpOptions = ReadSetSharpSettings(json);
 
                         var modelBuilder = new ConfigurationModelBuilder();
                         var classes = modelBuilder.BuildFrom(json);
-                        return (classes, generateOptions, (Diagnostic?)null);
+                        return (classes, setSharpOptions, (Diagnostic?)null);
                     }
                     catch (Exception e)
                     {
                         var diagnostic = Diagnostic.Create(DiagnosticDescriptors.ParsingFailedError, Location.None, e.Message);
-                        return ((List<SettingClassInfo>?)null, true, diagnostic);
+                        return ((List<SettingClassInfo>?)null, new SetSharpSettings(), diagnostic);
                     }
                 });
 
@@ -48,22 +48,22 @@ namespace SetSharp
 
             var finalProvider = combinedProvider.Select((source, cancellationToken) =>
             {
-                var ((classes, generateOptions, diagnostic), compilation) = source;
+                var ((classes, setSharpOptions, diagnostic), compilation) = source;
 
                 // If parsing already failed, just pass the error through.
                 if (diagnostic != null)
                 {
-                    return new SourceGenerationModel(null, false, diagnostic);
+                    return new SourceGenerationModel(null, setSharpOptions, diagnostic);
                 }
 
-                var dependencyDiagnostic = CheckDependencies(compilation, generateOptions);
+                var dependencyDiagnostic = CheckDependencies(compilation, setSharpOptions.OptionPatternGenerationEnabled);
 
                 if (dependencyDiagnostic != null)
                 {
-                    return new SourceGenerationModel(classes, generateOptions, dependencyDiagnostic);
+                    return new SourceGenerationModel(classes, setSharpOptions, dependencyDiagnostic);
                 }
 
-                return new SourceGenerationModel(classes, generateOptions, null);
+                return new SourceGenerationModel(classes, setSharpOptions, null);
             });
 
             context.RegisterSourceOutput(finalProvider, (spc, model) =>
@@ -82,7 +82,7 @@ namespace SetSharp
                         spc.AddSource("AppSettings.g.cs", SourceText.From(pocoSourceCode, Encoding.UTF8));
                     }
 
-                    if (model.GenerateOptions && model.Classes is { Count: > 0 })
+                    if (model.SetSharpSettings.OptionPatternGenerationEnabled && model.Classes is { Count: > 0 })
                     {
                         var extensionsSourceCode = OptionsPatternGenerator.Generate(model.Classes);
                         spc.AddSource("OptionsExtensions.g.cs", SourceText.From(extensionsSourceCode, Encoding.UTF8));
@@ -91,20 +91,21 @@ namespace SetSharp
             });
         }
 
-        private static bool ReadSetSharpSettingsIfProvided(Dictionary<string, object> json)
+        private static SetSharpSettings ReadSetSharpSettings(Dictionary<string, object> json)
         {
-            if (json.TryGetValue("SetSharp", out var setSharpObject)
-                                            && setSharpObject is Dictionary<string, object> setSharpDict)
+            var setSharpOptions = new SetSharpSettings();
+            var settingOption = SetSharpJsonReader.Read(json, "SetSharp");
+            if (settingOption is not null and Dictionary<string, object> setSharpDict)
             {
+
                 if (setSharpDict.TryGetValue("OptionPatternGenerationEnabled", out var enabledValue)
                     && bool.TryParse(enabledValue?.ToString(), out var parsedBool))
                 {
-                    return parsedBool;
+                    setSharpOptions.OptionPatternGenerationEnabled = parsedBool;
                 }
-            }
 
-            // Default to true if the setting is not present.
-            return true;
+            }
+            return setSharpOptions;
         }
 
         /// <summary>

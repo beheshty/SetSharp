@@ -5,16 +5,16 @@ namespace SetSharp.Models
     internal class SourceGenerationModel
     {
         internal SourceGenerationModel(List<SettingClassInfo>? classes, 
-            bool generateOptions,
+            SetSharpSettings setSharpSettings,
             Diagnostic? diagnostic)
         {
             Classes = classes;
-            GenerateOptions = generateOptions;
+            SetSharpSettings = setSharpSettings;
             Diagnostic = diagnostic;
         }
 
         internal List<SettingClassInfo>? Classes { get; }
-        internal bool GenerateOptions { get; }
+        internal SetSharpSettings SetSharpSettings { get; }
         internal Diagnostic? Diagnostic { get; }
     }
 }
