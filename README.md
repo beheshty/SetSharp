@@ -174,6 +174,8 @@ SetSharp is actively being developed. Here are some of the features and improvem
 
 Have an idea or a feature request? Feel free to open an issue on GitHub to discuss it!
 
+## Changelog
+See [CHANGELOG.md](./CHANGELOG.md) for version history.
 
 ## Contributing
 
