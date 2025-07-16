@@ -10,7 +10,7 @@ Say goodbye to magic strings and runtime errors. With SetSharp, your configurati
 
 ## Key Features
 
--   **Automatic POCO Generation:** Mirrors your `appsettings.json` structure into clean, ready-to-use C# classes.
+-   **Automatic POCO Generation:** Mirrors your `appsettings.json` structure into clean, ready-to-use C# records.
 -   **Strongly-Typed Access:** No more `_configuration["Section:Key"]`. Access settings with `options.Value.Section.Key`.
 -   **Seamless DI Integration:** Automatically generates extension methods to register your configuration with Dependency Injection using the `IOptions` pattern.
 -   **Zero Runtime Overhead:** All code generation happens at compile time, adding no performance cost to your application.
@@ -52,7 +52,7 @@ For the source generator to work its magic, you must explicitly tell the compile
 
 ### 3. Build Your Project
 
-That's it! Simply build your project. SetSharp will run automatically, generating your configuration classes in the background.
+That's it! Simply build your project. SetSharp will run automatically, generating your configuration records in the background.
 
 ```bash
 dotnet build
@@ -60,9 +60,9 @@ dotnet build
 
 ## How to Use
 
-SetSharp generates two key things for you: strongly-typed classes and Dependency Injection extension methods.
+SetSharp generates two key things for you: strongly-typed records and Dependency Injection extension methods.
 
-### 1. Generated Configuration Classes
+### 1. Generated Configuration Records
 
 For an `appsettings.json` like this:
 
@@ -77,34 +77,34 @@ For an `appsettings.json` like this:
 }
 ```
 
-SetSharp will generate corresponding C# classes, typically within the `SetSharp.Configuration` namespace:
+SetSharp will generate corresponding C# records, within the `SetSharp.Configuration` namespace:
 
 ```csharp
 namespace SetSharp.Configuration
 {
-    public class RootOptions
+    public record RootOptions
     {
-        public ConnectionStringsOptions ConnectionStrings { get; set; }
-        public FeatureManagementOptions FeatureManagement { get; set; }
+        public ConnectionStringsOptions ConnectionStrings { get; init; }
+        public FeatureManagementOptions FeatureManagement { get; init; }
     }
 
-    public class ConnectionStringsOptions
+    public record ConnectionStringsOptions
     {
         public const string SectionName = "ConnectionStrings";
-        public string DefaultConnection { get; set; }
+        public string DefaultConnection { get; init; }
     }
 
-    public class FeatureManagementOptions
+    public record FeatureManagementOptions
     {
         public const string SectionName = "FeatureManagement";
-        public bool EnableNewDashboard { get; set; }
+        public bool EnableNewDashboard { get; init; }
     }
 }
 ```
 
 ### 2. Dependency Injection with the Options Pattern
 
-SetSharp makes registering these classes with your DI container incredibly simple by generating extension methods for `IServiceCollection`.
+SetSharp makes registering these records with your DI container incredibly simple by generating extension methods for `IServiceCollection`.
 
 You have two ways to register your settings:
 
