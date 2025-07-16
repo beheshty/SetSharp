@@ -82,19 +82,19 @@ SetSharp will generate corresponding C# records, within the `SetSharp.Configurat
 ```csharp
 namespace SetSharp.Configuration
 {
-    public record RootOptions
+    public partial record RootOptions
     {
         public ConnectionStringsOptions ConnectionStrings { get; init; }
         public FeatureManagementOptions FeatureManagement { get; init; }
     }
 
-    public record ConnectionStringsOptions
+    public partial record ConnectionStringsOptions
     {
         public const string SectionName = "ConnectionStrings";
         public string DefaultConnection { get; init; }
     }
 
-    public record FeatureManagementOptions
+    public partial record FeatureManagementOptions
     {
         public const string SectionName = "FeatureManagement";
         public bool EnableNewDashboard { get; init; }
