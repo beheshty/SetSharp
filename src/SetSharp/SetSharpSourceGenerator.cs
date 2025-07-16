@@ -118,6 +118,11 @@ namespace SetSharp
                 return Diagnostic.Create(DiagnosticDescriptors.MissingBaseDependencyError, Location.None);
             }
 
+            if (compilation.GetTypeByMetadataName("System.Collections.Immutable.ImmutableList") == null)
+            {
+                return Diagnostic.Create(DiagnosticDescriptors.MissingBaseDependencyError, Location.None);
+            }
+
             if (!checkForOptionsPattern)
             {
                 return null;
