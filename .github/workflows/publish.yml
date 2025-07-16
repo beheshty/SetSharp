@@ -43,6 +43,7 @@ jobs:
         else
           echo "No new version detected"
           echo "run_publish=false" >> $GITHUB_ENV
+        fi
 
     - name: Build
       if: env.run_publish == 'true'
