@@ -5,7 +5,6 @@ using SetSharp.Helpers;
 using SetSharp.ModelBuilder;
 using SetSharp.Models;
 using System.Text;
-using Microsoft.CodeAnalysis.Diagnostics;
 using SetSharp.Diagnostics;
 
 namespace SetSharp
@@ -115,6 +114,11 @@ namespace SetSharp
         private Diagnostic? CheckDependencies(Compilation compilation, bool checkForOptionsPattern)
         {
             if (compilation.GetTypeByMetadataName("Microsoft.Extensions.Configuration.ConfigurationKeyNameAttribute") == null)
+            {
+                return Diagnostic.Create(DiagnosticDescriptors.MissingBaseDependencyError, Location.None);
+            }
+
+            if (compilation.GetTypeByMetadataName("System.Collections.Immutable.ImmutableList") == null)
             {
                 return Diagnostic.Create(DiagnosticDescriptors.MissingBaseDependencyError, Location.None);
             }

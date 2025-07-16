@@ -57,7 +57,7 @@ namespace SetSharp.ModelBuilder
 
         private string InferListType(string parentSectionPath, string key, List<object> list)
         {
-            if (list.Count == 0) return "List<object>";
+            if (list.Count == 0) return "ImmutableList<object>";
 
             string HandleListItemObject(Dictionary<string, object> obj)
             {
@@ -79,7 +79,7 @@ namespace SetSharp.ModelBuilder
                 _ => "object"
             };
 
-            return $"List<{listTypeName}>";
+            return $"ImmutableList<{listTypeName}>";
         }
 
         private string CreateNestedClass(string sectionPath, string classNameKey, Dictionary<string, object> obj, bool isFromCollection = false)
