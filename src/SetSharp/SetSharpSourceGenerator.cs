@@ -5,7 +5,6 @@ using SetSharp.Helpers;
 using SetSharp.ModelBuilder;
 using SetSharp.Models;
 using System.Text;
-using Microsoft.CodeAnalysis.Diagnostics;
 using SetSharp.Diagnostics;
 
 namespace SetSharp
