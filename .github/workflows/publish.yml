@@ -21,11 +21,37 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Get the version from the .csproj file
+      id: get_version
+      run: |
+        VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" src/SetSharp/SetSharp.csproj)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Get the latest published version from NuGet
+      id: get_latest_version
+      run: |
+        PACKAGE_ID="SetSharp"
+        LATEST_VERSION=$(curl -s https://api.nuget.org/v3-flatcontainer/${PACKAGE_ID,,}/index.json | jq -r '.versions | last')
+        echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
+    - name: Compare versions
+      id: version_check
+      run: |
+        if [ "$VERSION" != "$LATEST_VERSION" ]; then
+          echo "New version detected: $VERSION"
+          echo "run_publish=true" >> $GITHUB_ENV
+        else
+          echo "No new version detected"
+          echo "run_publish=false" >> $GITHUB_ENV
+
     - name: Build
+      if: env.run_publish == 'true'
       run: dotnet build --configuration Release --no-restore
 
     - name: Pack
+      if: env.run_publish == 'true'
       run: dotnet pack src/SetSharp/SetSharp.csproj --configuration Release --no-build
 
     - name: Publish to NuGet
+      if: env.run_publish == 'true'
       run: dotnet nuget push "src/SetSharp/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json"
