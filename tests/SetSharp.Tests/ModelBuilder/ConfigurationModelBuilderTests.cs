@@ -106,7 +106,7 @@ namespace SetSharp.Tests.ModelBuilder
             var rootModel = Assert.Single(result);
             var listProperty = Assert.Single(rootModel.Properties);
             Assert.Equal("AllowedHosts", listProperty.PropertyName);
-            Assert.Equal("List<string>", listProperty.PropertyType);
+            Assert.Equal("ImmutableList<string>", listProperty.PropertyType);
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace SetSharp.Tests.ModelBuilder
             var rootModel = Assert.Single(result);
             var listProperty = Assert.Single(rootModel.Properties);
             Assert.Equal("EmptyList", listProperty.PropertyName);
-            Assert.Equal("List<object>", listProperty.PropertyType);
+            Assert.Equal("ImmutableList<object>", listProperty.PropertyType);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace SetSharp.Tests.ModelBuilder
             var rootModel = result.First(c => c.ClassName == "RootOptions");
             var listProperty = Assert.Single(rootModel.Properties);
             Assert.Equal("Endpoints", listProperty.PropertyName);
-            Assert.Equal("List<EndpointsItemOptions>", listProperty.PropertyType);
+            Assert.Equal("ImmutableList<EndpointsItemOptions>", listProperty.PropertyType);
 
             // Test Nested List Item Class
             var endpointItemModel = result.First(c => c.ClassName == "EndpointsItemOptions");
@@ -167,8 +167,6 @@ namespace SetSharp.Tests.ModelBuilder
         [Fact]
         public void NormalizeName_WithInvalidChars_ShouldSanitizeName()
         {
-            // This test calls a private method. To test it directly, you could make it internal
-            // or use a PrivateObject accessor. Here, we test it indirectly via its effect in BuildFrom.
             // Arrange
             var builder = new ConfigurationModelBuilder();
             var root = new Dictionary<string, object>
