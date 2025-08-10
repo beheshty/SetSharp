@@ -14,7 +14,7 @@ namespace SetSharp.Tests.ModelBuilder
             {
                 { "ConnectionString", "Server=.;Database=Test;"},
                 { "Timeout", 30 },
-                { "MaxRetries", 9223372036854775807L }, 
+                { "MaxRetries", 9223372036854775807L },
                 { "EnableLogging", true },
                 { "DefaultThreshold", 0.95 }
             };
@@ -240,5 +240,55 @@ namespace SetSharp.Tests.ModelBuilder
             Assert.Equal("RootOptions", rootModel.ClassName);
             Assert.Empty(rootModel.Properties);
         }
+
+        [Fact]
+        public void BuildFrom_WithListOfObjectsHavingDifferentProperties_ShouldCreateComprehensiveClass()
+        {
+            // Arrange
+            var builder = new ConfigurationModelBuilder();
+            var root = new Dictionary<string, object>
+            {
+                { "Products", new List<object> {
+                    // First item only has Name and Id
+                    new Dictionary<string, object> {
+                        { "Id", 1 },
+                        { "Name", "Gadget" }
+                    },
+                    // Second item adds a 'Price' property
+                    new Dictionary<string, object> {
+                        { "Id", 2 },
+                        { "Name", "Widget" },
+                        { "Price", 99.99 }
+                    },
+                    // Third item adds an 'InStock' property
+                     new Dictionary<string, object> {
+                        { "Id", 3 },
+                        { "Name", "Doodad" },
+                        { "InStock", true }
+                    }
+                }}
+            };
+
+            // Act
+            var result = builder.BuildFrom(root);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+
+            var rootModel = result.First(c => c.ClassName == "RootOptions");
+            var listProperty = Assert.Single(rootModel.Properties);
+            Assert.Equal("Products", listProperty.PropertyName);
+            Assert.Equal("ImmutableList<ProductsItemOptions>", listProperty.PropertyType);
+
+            var productItemModel = result.First(c => c.ClassName == "ProductsItemOptions");
+            Assert.Equal("Products", productItemModel.SectionPath);
+
+            Assert.Equal(4, productItemModel.Properties.Count);
+            Assert.Contains(productItemModel.Properties, p => p.PropertyName == "Id" && p.PropertyType == "int");
+            Assert.Contains(productItemModel.Properties, p => p.PropertyName == "Name" && p.PropertyType == "string");
+            Assert.Contains(productItemModel.Properties, p => p.PropertyName == "Price" && p.PropertyType == "double");
+            Assert.Contains(productItemModel.Properties, p => p.PropertyName == "InStock" && p.PropertyType == "bool");
+        }
     }
+
 }
