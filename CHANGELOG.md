@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-08-10
+### Changed
+- Enhanced the type inference logic for JSON arrays. The source generator now analyzes **all** objects within an array to create a single, comprehensive class for the list items. This replaces the previous behavior of only inspecting the first item, ensuring that properties from all objects are correctly captured.
+
+## [2.0.1] - 2025-08-04
+### Added
+- Added `Shipped.md` and `Unshipped.md` files to track analyzer diagnostics and releases. These files follow the official Roslyn analyzer release tracking format.
+
+### Notes
+- This is a documentation-only update with no functional code changes.
+
 ## [2.0.1] - 2025-08-04
 ### Added
 - Added `Shipped.md` and `Unshipped.md` files to track analyzer diagnostics and releases.
