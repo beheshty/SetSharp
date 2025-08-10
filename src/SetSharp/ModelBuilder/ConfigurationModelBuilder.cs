@@ -57,29 +57,49 @@ namespace SetSharp.ModelBuilder
 
         private string InferListType(string parentSectionPath, string key, List<object> list)
         {
-            if (list.Count == 0) return "ImmutableList<object>";
-
-            string HandleListItemObject(Dictionary<string, object> obj)
+            if (list.Count == 0)
             {
-                var sectionPath = string.IsNullOrEmpty(parentSectionPath) ? key : $"{parentSectionPath}:{key}";
-                var classNameKey = $"{key}Item";
-                return CreateNestedClass(sectionPath, classNameKey, obj, isFromCollection: true);
+                return "ImmutableList<object>";
             }
 
-            // Infer list type from the first item
-            var firstItem = list[0];
-            string listTypeName = firstItem switch
+            var objectItems = list.OfType<Dictionary<string, object>>().ToList();
+
+            // If the list contains no objects (e.g., a list of strings or ints),
+            // infer the type from the first element as a fallback.
+            if (objectItems.Count == 0)
+            {
+                return InferSimpleListType(list[0]);
+            }
+
+            var mergedObject = new Dictionary<string, object>();
+            foreach (var item in objectItems)
+            {
+                foreach (var prop in item)
+                {
+                    mergedObject[prop.Key] = prop.Value;
+                }
+            }
+
+            var sectionPath = string.IsNullOrEmpty(parentSectionPath) ? key : $"{parentSectionPath}:{key}";
+            var classNameKey = $"{key}Item";
+            var listTypeName = CreateNestedClass(sectionPath, classNameKey, mergedObject, isFromCollection: true);
+
+            return $"ImmutableList<{listTypeName}>";
+        }
+
+        // Helper for simple list types (string, int, etc.)
+        private string InferSimpleListType(object item)
+        {
+            string typeName = item switch
             {
                 string => "string",
                 int => "int",
                 long => "long",
                 double => "double",
                 bool => "bool",
-                Dictionary<string, object> obj => HandleListItemObject(obj),
                 _ => "object"
             };
-
-            return $"ImmutableList<{listTypeName}>";
+            return $"ImmutableList<{typeName}>";
         }
 
         private string CreateNestedClass(string sectionPath, string classNameKey, Dictionary<string, object> obj, bool isFromCollection = false)
