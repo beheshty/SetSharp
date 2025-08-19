@@ -39,6 +39,7 @@
 		<None Include="..\..\README.md" Pack="true" PackagePath="" Visible="False" />
 		<None Include="..\..\icon.png" Pack="true" PackagePath="" Visible="False" />
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<Content Include="build/SetSharp.props" Pack="true" PackagePath="build" />
 	</ItemGroup>
 
 	<ItemGroup>
