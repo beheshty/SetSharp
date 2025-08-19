@@ -1,0 +1,6 @@
+<Project>
+	<ItemGroup>
+		<CompilerVisibleProperty Include="SetSharp_OptionPatternGenerationEnabled" />
+		<CompilerVisibleProperty Include="SetSharp_SourceFile" />
+	</ItemGroup>
+</Project>
