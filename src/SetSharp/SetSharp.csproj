@@ -10,7 +10,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 		<PackageId>SetSharp</PackageId>
-		<Version>2.1.0</Version>
+		<Version>3.0.0</Version>
 		<PackageIcon>icon.png</PackageIcon>
 		<Authors>Amirhossein Beheshti</Authors>
 		<Description>Generates strongly typed settings classes from appsettings.json using Source Generators.</Description>
@@ -39,6 +39,7 @@
 		<None Include="..\..\README.md" Pack="true" PackagePath="" Visible="False" />
 		<None Include="..\..\icon.png" Pack="true" PackagePath="" Visible="False" />
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<Content Include="build/SetSharp.props" Pack="true" PackagePath="build" />
 	</ItemGroup>
 
 	<ItemGroup>

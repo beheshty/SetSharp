@@ -26,7 +26,7 @@ SetSharp has the following dependencies that you need to be aware of:
 -   **`Microsoft.Extensions.Options.ConfigurationExtensions`**
     This package is required **only if** you are using the automatic `IOptions` pattern generation (which is enabled by default). If this package is missing while the feature is active, you will receive a compile-time error (`SSG002`).
 
-*You can disable the `IOptions` pattern feature and remove this second dependency by setting `SetSharp:OptionPatternGenerationEnabled` to `false` in your `appsettings.json`. See the Configuration section for details.*
+*You can disable the `IOptions` pattern feature and remove this second dependency by setting the `SetSharp_OptionPatternGenerationEnabled` MSBuild property to `false` in your `.csproj` file. See the Configuration section for details.*
 
 ## Getting Started
 
@@ -146,32 +146,35 @@ public class MyService
 }
 ```
 
-## Configuration
+## Configuration (via MSBuild Properties)
 
-You can control the behavior of SetSharp with a setting in your `appsettings.json`.
+You can control the behavior of SetSharp by setting MSBuild properties in your project's `.csproj` file.
 
-### Disabling Options Pattern Generation
-
-If you only want the strongly-typed classes and do not need the DI extension methods for the `IOptions` pattern, you can disable their generation. This also removes the requirement for the `Microsoft.Extensions.Options.ConfigurationExtensions` package.
-
-Add the following section to your `appsettings.json`:
-
-```json
-{
-  "SetSharp": {
-    "OptionPatternGenerationEnabled": false
-  },
-  // ... your other settings
-}
+```xml
+<PropertyGroup>
+  <SetSharp_OptionPatternGenerationEnabled>false</SetSharp_OptionPatternGenerationEnabled>
+  <SetSharp_SourceFile>config/production.json</SetSharp_SourceFile>
+</PropertyGroup>
 ```
+
+### `SetSharp_OptionPatternGenerationEnabled`
+
+Controls whether the Dependency Injection extension methods for the `IOptions` pattern are generated.
+
+-   **`true`** (Default): Generates `Add[OptionName]` and `AddAllGeneratedOptions` extension methods. Requires a reference to `Microsoft.Extensions.Options.ConfigurationExtensions`.
+-   **`false`**: Skips generation of DI extension methods. This removes the dependency on `Microsoft.Extensions.Options.ConfigurationExtensions`.
+
+### `SetSharp_SourceFile`
+
+Specifies the name of the JSON configuration file to use as the source for generation. If you use this, remember to update the `<AdditionalFiles>` item in your `.csproj` to match the new name.
+
+-   **Default:** `appsettings.json`
+
+If this property is set but the file cannot be found in the project's `AdditionalFiles`, you will receive a compile-time error (`SSG004`).
 
 ## Future Plans
 
-SetSharp is actively being developed. Here are some of the features and improvements planned for future releases:
-
--   **Custom Source File:** Allowing users to specify custom configuration file names (e.g., `my-settings.json` or `appsettings.development.json`) instead of being limited to `appsettings.json`.
-
-Have an idea or a feature request? Feel free to open an issue on GitHub to discuss it!
+SetSharp is actively being developed. Have an idea or a feature request? Feel free to open an issue on GitHub to discuss it!
 
 ## Changelog
 See [CHANGELOG.md](https://github.com/beheshty/SetSharp/blob/master/CHANGELOG.md) for version history.
