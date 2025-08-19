@@ -1,11 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using SetSharp.CodeGeneration;
+using SetSharp.Diagnostics;
 using SetSharp.Helpers;
 using SetSharp.ModelBuilder;
 using SetSharp.Models;
+using SetSharp.Providers;
 using System.Text;
-using SetSharp.Diagnostics;
 
 namespace SetSharp
 {
@@ -14,97 +15,74 @@ namespace SetSharp
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            IncrementalValuesProvider<AdditionalText> textFiles =
-                context.AdditionalTextsProvider.Where(static file => Path.GetFileName(file.Path).Equals("appsettings.json"));
+            var settingsProvider = GeneratorSettingsProvider.GetSettings(context);
 
-            IncrementalValuesProvider<(List<SettingClassInfo>? Classes, SetSharpSettings SetSharpOptions, Diagnostic? Diagnostic)> settingsAndOptionsProvider =
-                textFiles.Select((text, cancellationToken) =>
-                {
-                    var content = text.GetText(cancellationToken);
-                    if (content is null)
-                    {
-                        return ((List<SettingClassInfo>?)null, new SetSharpSettings(), null);
-                    }
+            var settingsAndTextsProvider = settingsProvider.Combine(context.AdditionalTextsProvider.Collect());
 
-                    try
-                    {
-                        var json = SetSharpJsonParser.Parse(content.ToString());
-
-                        var setSharpOptions = ReadSetSharpSettings(json);
-
-                        var modelBuilder = new ConfigurationModelBuilder();
-                        var classes = modelBuilder.BuildFrom(json);
-                        return (classes, setSharpOptions, (Diagnostic?)null);
-                    }
-                    catch (Exception e)
-                    {
-                        var diagnostic = Diagnostic.Create(DiagnosticDescriptors.ParsingFailedError, Location.None, e.Message);
-                        return ((List<SettingClassInfo>?)null, new SetSharpSettings(), diagnostic);
-                    }
-                });
-
-            var combinedProvider = settingsAndOptionsProvider.Combine(context.CompilationProvider);
-
-            var finalProvider = combinedProvider.Select((source, cancellationToken) =>
+            var pocoInfoProvider = settingsAndTextsProvider.Select((source, cancellationToken) =>
             {
-                var ((classes, setSharpOptions, diagnostic), compilation) = source;
+                var (settings, allTexts) = source;
 
-                // If parsing already failed, just pass the error through.
-                if (diagnostic != null)
+                var sourceFile = allTexts.FirstOrDefault(text =>
+                    Path.GetFileName(text.Path).Equals(settings.SourceFile, StringComparison.OrdinalIgnoreCase));
+
+                if (sourceFile is null)
                 {
-                    return new SourceGenerationModel(null, setSharpOptions, diagnostic);
+                    var diagnostic = Diagnostic.Create(DiagnosticDescriptors.SourceFileNotFoundError, Location.None, settings.SourceFile);
+                    return new SourceGenerationModel(null, settings, diagnostic);
                 }
 
-                var dependencyDiagnostic = CheckDependencies(compilation, setSharpOptions.OptionPatternGenerationEnabled);
-
-                if (dependencyDiagnostic != null)
+                var content = sourceFile.GetText(cancellationToken);
+                if (content is null)
                 {
-                    return new SourceGenerationModel(classes, setSharpOptions, dependencyDiagnostic);
+                    return new SourceGenerationModel(null, settings, null);
                 }
 
-                return new SourceGenerationModel(classes, setSharpOptions, null);
+                try
+                {
+                    var json = SetSharpJsonParser.Parse(content.ToString());
+                    var modelBuilder = new ConfigurationModelBuilder();
+                    var classes = modelBuilder.BuildFrom(json);
+                    return new SourceGenerationModel(classes, settings, null);
+                }
+                catch (Exception e)
+                {
+                    var diagnostic = Diagnostic.Create(DiagnosticDescriptors.ParsingFailedError, Location.None, e.Message);
+                    return new SourceGenerationModel(null, settings, diagnostic);
+                }
             });
 
-            context.RegisterSourceOutput(finalProvider, (spc, model) =>
+            var finalProvider = pocoInfoProvider.Combine(context.CompilationProvider);
+
+            context.RegisterSourceOutput(finalProvider, (spc, source) =>
             {
+                var (model, compilation) = source;
+
                 if (model.Diagnostic != null)
                 {
                     spc.ReportDiagnostic(model.Diagnostic);
+                    return;
                 }
 
-                // Always generate the POCO classes if parsing was successful.
-                if (model.Diagnostic is null)
+                var dependencyDiagnostic = CheckDependencies(compilation, model.SetSharpSettings.OptionPatternGenerationEnabled);
+                if (dependencyDiagnostic != null)
                 {
-                    if (model.Classes != null)
-                    {
-                        var pocoSourceCode = PocoGenerator.Generate(model.Classes);
-                        spc.AddSource("AppSettings.g.cs", SourceText.From(pocoSourceCode, Encoding.UTF8));
-                    }
+                    spc.ReportDiagnostic(dependencyDiagnostic);
+                    return;
+                }
 
-                    if (model.SetSharpSettings.OptionPatternGenerationEnabled && model.Classes is { Count: > 0 })
+                if (model.Classes != null)
+                {
+                    var pocoSourceCode = PocoGenerator.Generate(model.Classes);
+                    spc.AddSource("AppSettings.g.cs", SourceText.From(pocoSourceCode, Encoding.UTF8));
+
+                    if (model.SetSharpSettings.OptionPatternGenerationEnabled && model.Classes.Count > 0)
                     {
                         var extensionsSourceCode = OptionsPatternGenerator.Generate(model.Classes);
                         spc.AddSource("OptionsExtensions.g.cs", SourceText.From(extensionsSourceCode, Encoding.UTF8));
                     }
                 }
             });
-        }
-
-        private static SetSharpSettings ReadSetSharpSettings(Dictionary<string, object> json)
-        {
-            var setSharpOptions = new SetSharpSettings();
-            var settingOption = SetSharpJsonReader.Read(json, "SetSharp");
-            if (settingOption is not null and Dictionary<string, object> setSharpDict)
-            {
-
-                if (setSharpDict.TryGetValue("OptionPatternGenerationEnabled", out var enabledValue)
-                    && bool.TryParse(enabledValue?.ToString(), out var parsedBool))
-                {
-                    setSharpOptions.OptionPatternGenerationEnabled = parsedBool;
-                }
-
-            }
-            return setSharpOptions;
         }
 
         /// <summary>
