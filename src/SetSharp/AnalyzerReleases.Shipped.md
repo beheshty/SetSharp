@@ -1,6 +1,6 @@
 ﻿; Shipped analyzer release
 
-### 3.0.0
+### 3.0.1
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
