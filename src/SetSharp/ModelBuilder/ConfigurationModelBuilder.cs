@@ -20,10 +20,6 @@ namespace SetSharp.ModelBuilder
         {
             foreach (var item in obj)
             {
-                if (string.Equals(item.Key, "SetSharp", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
                 var propertyModel = new SettingPropertyInfo
                 {
                     OriginalJsonKey = item.Key,
