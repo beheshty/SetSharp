@@ -28,12 +28,12 @@ namespace SetSharp.Diagnostics
              DiagnosticSeverity.Error,
              true);
 
-        internal static readonly DiagnosticDescriptor SourceFileNotFoundError = new(
+        internal static readonly DiagnosticDescriptor SourceFileNotFoundWarning = new(
             "SSG004",
             "Source File Not Found",
-            "The specified source file '{0}' was not found. Ensure the file is included in your project as an 'AdditionalFiles' item in the .csproj.",
+            "The specified source file '{0}' was not found for assembly '{1}'. Ensure the file is included in your project as an 'AdditionalFiles' item in the .csproj.",
             "Configuration",
-            DiagnosticSeverity.Error,
+            DiagnosticSeverity.Warning,
             true);
     }
 }
