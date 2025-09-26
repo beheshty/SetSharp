@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-09-26
+### Changed
+- The diagnostic for a missing source file has been changed from a build-halting error to a non-blocking warning. The generator now continues without generating code instead of failing the compilation.
+- The warning for a missing source file now includes the name of the calling assembly to provide better context in multi-project solutions.
+
 ## [3.0.0] - 2025-08-19
 ### Breaking Change
 - **Generator configuration has been moved from `appsettings.json` to MSBuild properties in the `.csproj` file.** The `SetSharp` section within `appsettings.json` is no longer read. Users upgrading to this version **must** migrate their settings to their project file to continue configuring the generator.

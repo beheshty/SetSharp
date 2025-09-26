@@ -28,7 +28,7 @@ namespace SetSharp
 
                 if (sourceFile is null)
                 {
-                    var diagnostic = Diagnostic.Create(DiagnosticDescriptors.SourceFileNotFoundError, Location.None, settings.SourceFile);
+                    var diagnostic = Diagnostic.Create(DiagnosticDescriptors.SourceFileNotFoundWarning, Location.None, settings.SourceFile, "unknown");
                     return new SourceGenerationModel(null, settings, diagnostic);
                 }
 
@@ -58,7 +58,17 @@ namespace SetSharp
             {
                 var (model, compilation) = source;
 
-                if (model.Diagnostic != null)
+                if (model.Diagnostic?.Id == DiagnosticDescriptors.SourceFileNotFoundWarning.Id)
+                {
+                    var warning = Diagnostic.Create(
+                        DiagnosticDescriptors.SourceFileNotFoundWarning,
+                        Location.None,
+                        model.SetSharpSettings.SourceFile,
+                        compilation.AssemblyName);
+
+                    spc.ReportDiagnostic(warning);
+                }
+                else if (model.Diagnostic != null)
                 {
                     spc.ReportDiagnostic(model.Diagnostic);
                     return;
